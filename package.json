@@ -1,0 +1,28 @@
+{
+  "name": "mapmusik",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@change-org/eslint-plugin-change": "^1.1.0",
+    "coconutjs": "^2.2.0",
+    "eslint": "^5.11.1",
+    "eslint-config-change-base": "^7.0.0",
+    "eslint-config-prettier": "^3.3.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-lodash": "^5.1.0",
+    "eslint-plugin-prettier": "^3.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-security": "^1.4.0",
+    "express": "^4.16.4",
+    "isomorphic-fetch": "^2.2.1",
+    "prettier": "^1.15.3",
+    "s3": "^4.4.0",
+    "uuid": "^3.3.2"
+  }
+}
