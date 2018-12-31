@@ -3,7 +3,7 @@ const { default: GoogleMapReact } = require('google-map-react');
 const config = require('../../config/client.json');
 
 const App = () => (
-  <div style={{ height: '100vh', width: '100%' }}>
+  <div className="map-container">
     <GoogleMapReact
       bootstrapURLKeys={{ key: config.googleMaps.apiKey }}
       defaultCenter={{ lat: 37.6937518, lng: -97.3775182 }}
