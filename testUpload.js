@@ -1,6 +1,6 @@
 const s3 = require('s3');
 
-const config = require('./config.json');
+const config = require('./config/server.json');
 
 const s3Client = s3.createClient({
   s3Options: {
