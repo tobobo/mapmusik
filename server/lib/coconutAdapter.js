@@ -13,9 +13,9 @@ const buildVideoFromPayload = (id, coconutPayload) => ({
   thumbnail_url: coconutPayload.output_urls['jpg:640x'],
 });
 
-const transcodeVideo = (videoId, sourceUrl) => {
+const transcodeVideo = (videoId, sourceUrl) =>
   // eslint-disable-next-line promise/avoid-new
-  return new Promise((resolve, reject) => {
+  new Promise((resolve, reject) => {
     coconutApi.createJob(
       {
         api_key: config.coconut.apiKey,
@@ -37,8 +37,6 @@ const transcodeVideo = (videoId, sourceUrl) => {
       }
     );
   });
-};
-
 module.exports = {
   buildVideoFromPayload,
   transcodeVideo,

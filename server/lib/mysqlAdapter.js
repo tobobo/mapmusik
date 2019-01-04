@@ -9,7 +9,7 @@ module.exports = connection => {
       { updated_at: new Date(), ...video },
       id,
     ]);
-  }
+  };
 
   return { getVideos, createVideo, updateVideo };
 };
