@@ -8,7 +8,9 @@ const run = async () => {
   const connection = await mysql.createConnection(config.mysql);
   const mysqlAdapter = createMysqlAdapter(connection);
 
-  console.log(await mysqlAdapter.updateVideo('6d4fc4a3-6809-42df-bd3d-ea64d687fc84', { lat: 123 }));
+  console.log(
+    await mysqlAdapter.updateVideo({ id: '6d4fc4a3-6809-42df-bd3d-ea64d687fc84', lat: 456 })
+  );
 
   // console.log(
   //   await mysqlAdapter.createVideo(
