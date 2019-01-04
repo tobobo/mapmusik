@@ -9,8 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.18.3",
     "coconutjs": "^2.2.0",
     "db-migrate": "^0.11.4",
+    "db-migrate-mysql": "^1.1.10",
     "express": "^4.16.4",
     "google-map-react": "^1.1.2",
     "isomorphic-fetch": "^2.2.1",
