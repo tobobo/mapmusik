@@ -47,10 +47,12 @@ const main = async () => {
     },
   });
   files.on('data', data => {
-    debugger;
     return Promise.all(
-      fp.map(file => {
+      fp.map(async file => {
         if (file.Key.match(/\/$/)) return undefined;
+        const url = `https://${config.aws.bucketName}.s3.amazonaws.com/${file.Key}`;
+        const previousUpload = await mysqlAdapter.getUploadByUrl(url);
+        if (previousUpload) return undefined;
         return createVideo(`https://${config.aws.bucketName}.s3.amazonaws.com/${file.Key}`, {
           mysqlAdapter,
         });

@@ -1,5 +1,9 @@
 module.exports = connection => {
   const createUpload = upload => connection.query(`insert into uploads SET ?`, upload);
+  const getUploadByUrl = async url => {
+    const uploads = await connection.query(`select * from uploads where url = ?`, [url]);
+    return uploads[0];
+  };
   const getVideos = () =>
     connection.query('select * from videos order by created_at desc limit 100');
   const createVideo = video =>
@@ -12,5 +16,5 @@ module.exports = connection => {
     ]);
   };
 
-  return { createUpload, getVideos, createVideo, updateVideo };
+  return { createUpload, getUploadByUrl, getVideos, createVideo, updateVideo };
 };
