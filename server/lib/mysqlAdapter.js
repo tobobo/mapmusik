@@ -1,4 +1,5 @@
 module.exports = connection => {
+  const createUpload = upload => connection.query(`insert into uploads SET ?`, upload);
   const getVideos = () =>
     connection.query('select * from videos order by created_at desc limit 100');
   const createVideo = video =>
@@ -11,5 +12,5 @@ module.exports = connection => {
     ]);
   };
 
-  return { getVideos, createVideo, updateVideo };
+  return { createUpload, getVideos, createVideo, updateVideo };
 };

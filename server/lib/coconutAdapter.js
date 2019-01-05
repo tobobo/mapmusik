@@ -28,7 +28,7 @@ const transcodeVideo = (videoId, sourceUrl) =>
       },
       job => {
         if (job.status === 'ok') {
-          resolve(job);
+          resolve(job.id);
           return;
         }
         const err = new Error('Coconut job failed');
