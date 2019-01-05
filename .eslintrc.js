@@ -6,6 +6,6 @@ module.exports = {
   rules: {
     'prettier/prettier': ['error'],
     'no-console': ['warn'],
-    "import/no-extraneous-dependencies": ["error", { 'devDependencies': ['./server/devServer.js'] }]
+    "import/no-extraneous-dependencies": ["error", { 'devDependencies': ['./server/startDevServer.mjs'] }]
   },
 };

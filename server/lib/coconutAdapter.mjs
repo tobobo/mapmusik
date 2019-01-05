@@ -1,6 +1,5 @@
-const coconutApi = require('coconutjs');
-
-const config = require('../../config/server.json');
+import coconutApi from 'coconutjs';
+import config from '../../config/server.json';
 
 const s3BaseUrl = `s3://${config.aws.accessKeyId}:${config.aws.secretAccessKey}@${
   config.aws.bucketName
@@ -37,7 +36,5 @@ const transcodeVideo = (videoId, sourceUrl) =>
       }
     );
   });
-module.exports = {
-  buildVideoFromPayload,
-  transcodeVideo,
-};
+
+export { buildVideoFromPayload, transcodeVideo };

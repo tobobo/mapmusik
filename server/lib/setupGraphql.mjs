@@ -1,5 +1,7 @@
-const fp = require('lodash/fp');
-const { ApolloServer, gql } = require('apollo-server-express');
+import fp from 'lodash/fp';
+import ApolloServerExpress from 'apollo-server-express';
+
+const { ApolloServer, gql } = ApolloServerExpress;
 
 const typeDefs = gql`
   type Query {
@@ -33,4 +35,4 @@ const setupGraphql = app => {
   server.applyMiddleware({ app });
 };
 
-module.exports = setupGraphql;
+export default setupGraphql;

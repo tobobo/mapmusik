@@ -1,4 +1,4 @@
-module.exports = connection => {
+export default connection => {
   const createUpload = upload => connection.query(`insert into uploads SET ?`, upload);
   const getUploadByUrl = async url => {
     const uploads = await connection.query(`select * from uploads where url = ?`, [url]);

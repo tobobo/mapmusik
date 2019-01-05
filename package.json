@@ -2,10 +2,10 @@
   "name": "mapmusik",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "start": "nodemon --experimental-modules --inspect index.mjs"
   },
   "author": "",
   "license": "ISC",
@@ -39,6 +39,7 @@
     "@babel/preset-react": "^7.0.0",
     "@change-org/eslint-plugin-change": "^1.1.0",
     "babel-loader": "^8.0.4",
+    "babel-preset-env": "^1.7.0",
     "eslint": "^5.11.1",
     "eslint-config-change-base": "^7.0.0",
     "eslint-config-prettier": "^3.3.0",
