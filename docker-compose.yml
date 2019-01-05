@@ -1,0 +1,17 @@
+version: '2'
+services:
+  mysql:
+    container_name: mapmusik_mysql
+    restart: always
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_USER: mapmusik_dev
+      MYSQL_PASSWORD: mapmusik_dev
+      MYSQL_DATABASE: mapmusik_dev
+    # volumes:
+    #   - mysql-datavolume:/var/lib/mysql
+    ports:
+      - '3306:3306'
+volumes:
+  mysql-datavolume:
