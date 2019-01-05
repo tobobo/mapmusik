@@ -10,8 +10,6 @@ const run = async () => {
   const mysqlAdapter = createMysqlAdapter(connection);
 
   server.start({ mysqlAdapter });
-
-  connection.end();
 };
 
 run().catch(console.log);

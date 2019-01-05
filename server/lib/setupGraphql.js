@@ -1,20 +1,35 @@
+const fp = require('lodash/fp');
 const { ApolloServer, gql } = require('apollo-server-express');
 
 const typeDefs = gql`
   type Query {
-    hello: String
+    videos: [Video!]!
+  }
+
+  type Video {
+    id: ID!
+    videoUrl: String!
   }
 `;
 
 const resolvers = {
   Query: {
-    hello: () => 'Hello world!',
+    videos: (_, __, { mysqlAdapter }) => mysqlAdapter.getVideos(),
+  },
+
+  Video: {
+    videoUrl: fp.get('video_url'),
   },
 };
 
-const server = new ApolloServer({ typeDefs, resolvers });
-
 const setupGraphql = app => {
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    context: () => ({
+      mysqlAdapter: app.get('mysqlAdapter'),
+    }),
+  });
   server.applyMiddleware({ app });
 };
 
