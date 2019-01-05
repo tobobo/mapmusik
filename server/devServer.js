@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const webpack = require('webpack');
 const path = require('path');
+const webpack = require('webpack');
 const webpackDevMiddleware = require('webpack-dev-middleware');
 const setupGraphql = require('./lib/setupGraphql');
 const config = require('../config/server.json');
@@ -15,6 +15,7 @@ const start = ({ mysqlAdapter }) => {
   setupGraphql(app);
   app.set('mysqlAdapter', mysqlAdapter);
 
+  // Dev-only
   app.use('/bundle', webpackDevMiddleware(webpack(webpackConfig)));
   app.use('/public', express.static('./client/public'));
 
