@@ -1,17 +1,21 @@
 module.exports = {
   mode: 'development',
-  entry: './client/index.js',
+  entry: './client/index.mjs',
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
+        test: /\.(mjs)$/,
+        type: 'javascript/auto',
+      },
+      {
+        test: /\.(js|mjs)$/,
         exclude: /node_modules/,
-        use: ['babel-loader'],
+        loader: 'babel-loader',
       },
     ],
   },
   resolve: {
-    extensions: ['*', '.js', '.jsx'],
+    extensions: ['*', '.mjs', '.js'],
   },
   output: {
     path: `${__dirname}/dist`,
