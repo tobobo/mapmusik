@@ -12,18 +12,19 @@ const buildVideoFromPayload = (id, coconutPayload) => ({
   thumbnail_url: coconutPayload.output_urls['jpg:640x'],
 });
 
-const transcodeVideo = (videoId, sourceUrl) =>
+const transcodeVideo = (videoId, sourceUrl, coconutOptions) =>
   // eslint-disable-next-line promise/avoid-new
   new Promise((resolve, reject) => {
     coconutApi.createJob(
       {
         api_key: config.coconut.apiKey,
         source: sourceUrl,
-        webhook: 'https://example.com/webhook',
+        webhook: 'https://app.coconut.co/tools/webhooks/1a95362a/tobobo',
         outputs: {
           'mp4:360p': `${s3BaseUrl}/videos/${videoId}/video.360.mp4`,
           'jpg:640x': `${s3BaseUrl}/videos/${videoId}/image.640.jpg`,
         },
+        ...coconutOptions,
       },
       job => {
         if (job.status === 'ok') {

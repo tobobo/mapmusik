@@ -4,21 +4,36 @@ import path from 'path';
 import { cwd } from 'process';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
+import axios from 'axios';
 import setupGraphql from './lib/setupGraphql.mjs';
 import config from '../config/server.json';
 import webpackConfig from '../webpack.config.js';
 
 const app = express();
 
-app.use(bodyParser.json());
-
 const start = ({ mysqlAdapter }) => {
+  app.use(bodyParser.json());
   setupGraphql(app);
   app.set('mysqlAdapter', mysqlAdapter);
 
   // Dev-only
   app.use('/bundle', webpackDevMiddleware(webpack(webpackConfig)));
   app.use('/public', express.static('./client/public'));
+  app.get('/s3proxy', (req, res, next) => {
+    const {
+      query: { url },
+    } = req;
+    axios
+      .get(url, {
+        responseType: 'stream',
+      })
+      .then(response => {
+        res.set(response.headers);
+        response.data.pipe(res);
+      })
+      .catch(next);
+  });
+
   app.get('*', (req, res) => res.sendFile(path.join(cwd(), './client/index.html')));
 
   app.listen(config.port, () => {

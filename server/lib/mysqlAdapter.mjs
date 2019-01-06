@@ -4,6 +4,8 @@ export default connection => {
     const uploads = await connection.query(`select * from uploads where url = ?`, [url]);
     return uploads[0];
   };
+  const getUploads = ({ limit = 100 } = {}) =>
+    connection.query('select * from uploads limit = ?', [limit]);
   const getVideos = ({ limit = 100 } = {}) =>
     connection.query('select * from videos order by created_at desc limit ?', [limit]);
   const createVideo = video =>
@@ -16,5 +18,7 @@ export default connection => {
     ]);
   };
 
-  return { createUpload, getUploadByUrl, getVideos, createVideo, updateVideo };
+  process.on('exit', () => connection.end());
+
+  return { createUpload, getUploadByUrl, getUploads, getVideos, createVideo, updateVideo };
 };

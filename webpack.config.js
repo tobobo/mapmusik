@@ -1,6 +1,6 @@
 module.exports = {
   mode: 'development',
-  entry: './client/index.mjs',
+  entry: ['babel-polyfill', './client/index.mjs'],
   module: {
     rules: [
       {
