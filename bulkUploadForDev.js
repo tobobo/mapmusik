@@ -16,6 +16,7 @@ const s3Client = s3.createClient({
 const createVideo = async (url, { mysqlAdapter }) => {
   const videoId = uuidv4();
   const uploadId = uuidv4();
+  console.log('create video', url);
   await Promise.all([
     mysqlAdapter.createUpload({ id: uploadId, url }),
     coconutAdapter.transcodeVideo(videoId, url).then(jobId =>

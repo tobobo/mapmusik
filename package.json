@@ -16,6 +16,7 @@
     "apollo-link-http": "^1.5.9",
     "apollo-server-express": "^2.3.1",
     "body-parser": "^1.18.3",
+    "canvas-video": "^1.0.4",
     "coconutjs": "^2.2.0",
     "db-migrate": "^0.11.4",
     "db-migrate-mysql": "^1.1.10",
@@ -28,10 +29,11 @@
     "nodemon": "^1.18.9",
     "promise-mysql": "^3.3.1",
     "prop-types": "^15.6.2",
-    "react": "^16.7.0",
+    "react": "^16.7.0-alpha.2",
     "react-apollo": "^2.3.3",
-    "react-dom": "^16.7.0",
+    "react-dom": "^16.7.0-alpha.2",
     "s3": "^4.4.0",
+    "simple-cache-provider": "^0.10.0",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
