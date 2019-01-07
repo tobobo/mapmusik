@@ -11,6 +11,7 @@ const typeDefs = gql`
   type Video {
     id: ID!
     videoUrl: String!
+    thumbnailUrl: String!
   }
 `;
 
@@ -21,6 +22,7 @@ const resolvers = {
 
   Video: {
     videoUrl: fp.get('video_url'),
+    thumbnailUrl: fp.get('thumbnail_url'),
   },
 };
 
