@@ -2,6 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import path from 'path';
 import { cwd } from 'process';
+import fp from 'lodash/fp';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import axios from 'axios';
@@ -26,6 +27,9 @@ const start = ({ mysqlAdapter }) => {
     axios
       .get(url, {
         responseType: 'stream',
+        headers: fp.pick(['range', 'connection', 'user-agent', 'x-playback-session-id'])(
+          req.headers
+        ),
       })
       .then(response => {
         res.set(response.headers);
