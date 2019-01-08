@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState, Suspense } from 'react';
-import { createResource, createCache, SimpleCache } from 'simple-cache-provider';
+import { createResource, createCache } from 'simple-cache-provider';
 import PropTypes from 'prop-types';
 import fp from 'lodash/fp';
 import gql from 'graphql-tag';
@@ -9,105 +9,129 @@ const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
 const videoCache = createCache();
 const imageCache = createCache();
+const audioCache = createCache();
 
-const videoDataLoader = createResource(
-  videoUrl =>
-    new Promise((resolve, reject) => {
-      const video = document.createElement('video');
-      video.src = videoUrl;
-      video.autoplay = false;
+const videoDataLoader = createResource(videoUrl =>
+  // eslint-disable-next-line promise/avoid-new
+  new Promise((resolve, reject) => {
+    console.log('fetching video', videoUrl);
+    const video = document.createElement('video');
+    video.src = videoUrl;
+    video.autoplay = false;
 
-      const checkLoad = setInterval(() => {
-        if (video.readyState === 4) {
-          clearInterval(checkLoad);
-          resolve(video);
-        }
-      }, 1);
-    })
+    const checkLoad = setInterval(() => {
+      if (video.error) {
+        console.log('ve', video.error);
+        reject(video.error);
+        return;
+      }
+      if (video.readyState === 4) {
+        clearInterval(checkLoad);
+        resolve(video);
+      }
+    }, 1);
+  }).catch(() => {
+    console.log('error loading video', videoUrl);
+  })
 );
 
-const imageDataLoader = createResource(
-  imageUrl =>
-    new Promise((resolve, reject) => {
-      const image = new Image();
-      image.src = imageUrl;
-      image.addEventListener('load', resolve);
-      image.addEventListener('error', reject);
-    })
+const imageDataLoader = createResource(imageUrl =>
+  // eslint-disable-next-line promise/avoid-new
+  new Promise((resolve, reject) => {
+    console.log('fetching image', imageUrl);
+    const image = new Image();
+    image.src = imageUrl;
+    image.addEventListener('load', resolve);
+    image.addEventListener('error', reject);
+  }).catch(() => {
+    console.log('error loading image', imageUrl);
+  })
 );
 
-const Video = ({ video: { videoUrl }, hidden, playing, setPlay, setPause }) => {
-  const videoRef = useRef(null);
-  const playVideo = () => {
-    if (playing && videoRef.current.paused) {
-      videoRef.current.play();
-    }
-  };
-  const resetVideo = () => {
-    if (!videoRef.current.paused) {
-      videoRef.current.pause();
-    }
-    videoRef.current.currentTime = 0;
-  };
-  useEffect(
-    () => {
-      setPlay(playVideo);
-      setPause(resetVideo);
-    },
-    [videoUrl]
-  );
-  videoDataLoader.read(videoCache, videoUrl);
-  return (
-    <video
-      width={200}
-      hidden={hidden}
-      src={videoUrl}
-      autoPlay={false}
-      controls={false}
-      ref={videoRef}
-    />
-  );
-};
+const ImagePreview = ({ video: { thumbnailUrl }, hidden }) => (
+  <img width={200} hidden={hidden} src={thumbnailUrl} />
+);
 
-const ImagePreview = ({ video: { thumbnailUrl }, hidden }) => {
-  imageDataLoader.read(imageCache, thumbnailUrl);
-  return <img width={200} hidden={hidden} src={thumbnailUrl} />;
-};
-
-const loadSound = async (url, audioContext) => {
+const audioBufferLoader = createResource(async url => {
+  console.log('fetching buffer', url);
   const audioStack = [];
   const response = await fetch(`/s3proxy?url=${url.replace('video.360.mp4', 'mp3.128k.mp3')}`);
-  const reader = response.body.getReader();
+  const buffer = await response.arrayBuffer();
+  debugger;
+  return new Promise((resolve, reject) => {
+    audioContext.decodeAudioData(
+      buffer,
+      buffer => {
+        console.log('got good buffer');
+        audioStack.push(buffer);
+        resolve(audioStack);
+      },
+      (err) => {
+        console.log('got bad buffer');
+        reject(err);
+        // resolve(audioStack);
+        // reject(args[0]);
+      }
+    );
+  });
 
-  try {
-    // eslint-disable-next-line promise/avoid-new
-    await new Promise((resolve, reject) => {
-      const read = () =>
-        reader
-          .read()
-          .then(({ value: readValue, done }) => {
-            // eslint-disable-next-line promise/always-return
-            if (done) {
-              resolve();
-              return;
-            }
-            audioContext.decodeAudioData(
-              readValue.buffer,
-              buffer => {
-                audioStack.push(buffer);
-              },
-              reject
-            );
+  // eslint-disable-next-line promise/avoid-new
+  return new Promise((resolve, reject) => {
+    const read = () =>
+      reader.read().then(({ value: readValue, done }) => {
+        // eslint-disable-next-line promise/always-return
+        if (done) {
+          console.log('done with audio');
+          resolve(audioStack);
+          return;
+        }
+        audioContext.decodeAudioData(
+          readValue.buffer,
+          buffer => {
+            console.log('got good buffer');
+            audioStack.push(buffer);
             read();
-          })
-          .catch(reject);
-      read();
-    });
-  } catch (e) {}
-  return audioStack;
+          },
+          () => {
+            console.log('got bad buffer');
+            read();
+            // resolve(audioStack);
+            // reject(args[0]);
+          }
+        );
+      });
+    read();
+  });
+});
+
+const tryResource = resource => (cache, key) => {
+  try {
+    return { resource: resource.read(cache, key) };
+  } catch (promise) {
+    if (!promise) debugger;
+    console.log('catching', key, promise);
+    return { promise };
+  }
 };
 
-const scheduleBuffers = (buffers, audioContext) => {
+const combinedLoader = (videoUrl, imageUrl, audioUrl) => {
+  console.log('combined loader');
+  const resourceResults = [
+    tryResource(videoDataLoader)(videoCache, videoUrl),
+    tryResource(imageDataLoader)(imageCache, imageUrl),
+    tryResource(audioBufferLoader)(audioCache, audioUrl),
+  ];
+  const promises = fp.flow(
+    fp.filter(fp.has('promise')),
+    fp.map('promise')
+  )(resourceResults);
+  if (promises.length) {
+    throw Promise.all(promises);
+  }
+  return fp.map('resource')(resourceResults);
+};
+
+const scheduleBuffers = buffers => {
   let nextTime = 0;
   return fp.map(buffer => {
     const source = audioContext.createBufferSource();
@@ -122,89 +146,75 @@ const scheduleBuffers = (buffers, audioContext) => {
   })(buffers);
 };
 
-const Button = ({ video }) => {
+const VideoButton = ({ video }) => {
+  console.log('rendering button');
   const [touching, setTouching] = useState(false);
-  const [playAudio, setPlayAudio] = useState(() => {});
-  const [stopAudio, setStopAudio] = useState(() => {});
   const videoRef = useRef(null);
-  const sourceRef = useRef(null);
-  const playVideo = () => {
-    sourceRef;
+  const sourcesRef = useRef(null);
+  const isPlayingRef = useRef(false);
+  const [, , buffers] = combinedLoader(video.videoUrl, video.thumbnailUrl, video.audioUrl);
+  const play = () => {
+    if (isPlayingRef.current) return;
     videoRef.current.play();
+    sourcesRef.current = scheduleBuffers(buffers, audioContext);
+    isPlayingRef.current = true;
   };
-  const resetVideo = () => {
+  const reset = () => {
+    if (!isPlayingRef.current) return;
     videoRef.current.pause();
     videoRef.current.currentTime = 0;
+    fp.forEach(source => {
+      source.stop();
+    })(sourcesRef.current);
+    isPlayingRef.current = false;
   };
-  useEffect(() => {
-    loadSound(video.videoUrl, audioContext)
-      .then(buffers => {
-        setPlayAudio(() => () => {
-          audioContext.resume();
-          const sources = scheduleBuffers(buffers, audioContext);
-          setStopAudio(() => () => {
-            sources.forEach(source => {
-              source.stop();
-            });
-          });
-        });
-      })
-      .catch(console.log);
-  }, []);
   return (
-    <Suspense fallback="loading video...">
-      <div
-        style={{
-          display: 'inline-block',
-          '-webkit-touch-callout': 'none',
-          '-webkit-user-select': 'none',
-          '-khtml-user-select': 'none',
-          '-moz-user-select': 'none',
-          '-ms-user-select': 'none',
-          'user-select': 'none',
-        }}
-        onMouseDown={() => {
-          if (touching) return;
-          setTouching(true);
-          scheduleBuffers();
-          playVideo();
-          playAudio();
-        }}
-        onTouchStart={() => {
-          setTouching(true);
-          playVideo();
-          playAudio();
-        }}
-        onMouseUp={() => {
-          if (!touching) return;
-          setTouching(false);
-          resetVideo();
-          stopAudio();
-        }}
-        onTouchEnd={() => {
-          setTouching(false);
-          resetVideo();
-          stopAudio();
-        }}
+    <div
+      style={{
+        display: 'inline-block',
+        WebkitTouchCallout: 'none',
+        WebkitUserSelect: 'none',
+        KhtmlUserSelect: 'none',
+        MozUseSelect: 'none',
+        MsUserSelect: 'none',
+        UserSelect: 'none',
+      }}
+      onMouseDown={() => {
+        if (touching) return;
+        setTouching(true);
+        play();
+      }}
+      onTouchStart={() => {
+        setTouching(true);
+        reset();
+      }}
+      onMouseUp={() => {
+        if (!touching) return;
+        setTouching(false);
+        reset();
+      }}
+      onTouchEnd={() => {
+        setTouching(false);
+        reset();
+      }}
+    >
+      <video
+        width={200}
+        hidden={!touching}
+        autoPlay={false}
+        controls={false}
+        muted
+        playsInline
+        ref={videoRef}
       >
-        <video
-          width={200}
-          hidden={!touching}
-          autoPlay={false}
-          controls={false}
-          muted
-          playsInline
-          ref={videoRef}
-        >
-          <source src={video.videoUrl} type="video/mp4" ref={sourceRef} />
-        </video>
-        <ImagePreview video={video} hidden={touching} />
-      </div>
-    </Suspense>
+        <source src={video.videoUrl} type="video/mp4" />
+      </video>
+      <ImagePreview video={video} hidden={touching} />
+    </div>
   );
 };
 
-Button.propTypes = {
+VideoButton.propTypes = {
   video: PropTypes.shape({
     videoUrl: PropTypes.string.isRequired,
   }).isRequired,
@@ -216,18 +226,31 @@ const videosQuery = gql`
       id
       videoUrl
       thumbnailUrl
+      audioUrl
     }
   }
 `;
 
-const Buttons = () => (
-  <Query query={videosQuery}>
-    {({ loading, data }) => {
-      if (loading) return 'loading...';
-      // return <Button key={data.videos[0].id} video={data.videos[0]} />;
-      return fp.map(video => <Button key={video.id} video={video} />)(data.videos);
-    }}
-  </Query>
+const VideoSuspender = ({ video }) => (
+  <Suspense fallback="loading video..." delayMs={0}>
+    <VideoButton video={video} />
+  </Suspense>
 );
+
+const Buttons = () => {
+  console.log('render buttons', Buttons);
+  return (
+    <Query query={videosQuery}>
+      {({ loading, data }) => {
+        console.log('query state', loading);
+        if (loading) return 'loading...';
+        // return <VideoSuspender key={data.videos[0].id} video={data.videos[0]} />;
+        return fp.map(video => <VideoSuspender key={video.id} video={video} delayMs={0} />)(
+          data.videos.slice(0, 1)
+        );
+      }}
+    </Query>
+  );
+};
 
 export default Buttons;
