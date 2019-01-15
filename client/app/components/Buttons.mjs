@@ -32,21 +32,20 @@ const videoDataLoader = createResource(
     })
 );
 
-const imageDataLoader = createResource(imageUrl =>
-  // eslint-disable-next-line promise/avoid-new
-  new Promise((resolve, reject) => {
-    console.log('fetching image', imageUrl);
-    const image = new Image();
-    image.src = imageUrl;
-    image.addEventListener('load', resolve);
-    image.addEventListener('error', reject);
-  }).catch(() => {
-    console.log('error loading image', imageUrl);
-  })
+const imageDataLoader = createResource(
+  imageUrl =>
+    // eslint-disable-next-line promise/avoid-new
+    new Promise((resolve, reject) => {
+      console.log('fetching image', imageUrl);
+      const image = new Image();
+      image.src = imageUrl;
+      image.addEventListener('load', resolve);
+      image.addEventListener('error', reject);
+    })
 );
 
 const ImagePreview = ({ video: { thumbnailUrl }, hidden }) => (
-  <img width={200} hidden={hidden} src={thumbnailUrl} />
+  <img style={{ width: '100%' }} hidden={hidden} src={thumbnailUrl} />
 );
 
 const audioBufferLoader = createResource(async url => {
@@ -125,15 +124,8 @@ const VideoButton = ({ video }) => {
       style={{
         display: 'inline-block',
         position: 'relative',
-        width: 200,
-        height: 200,
-        overflow: 'hidden',
-        WebkitTouchCallout: 'none',
-        WebkitUserSelect: 'none',
-        KhtmlUserSelect: 'none',
-        MozUseSelect: 'none',
-        MsUserSelect: 'none',
-        UserSelect: 'none',
+        width: '100%',
+        height: '100%',
       }}
       onMouseDown={() => {
         if (touching) return;
@@ -158,14 +150,13 @@ const VideoButton = ({ video }) => {
         <ImagePreview video={video} />
       </div>
       <video
-        width={200}
         autoPlay={false}
         controls={false}
         muted
         playsInline
         ref={videoRef}
         src={video.videoUrl}
-        style={{ position: 'absolute' }}
+        style={{ position: 'absolute', width: '100%' }}
         hidden={!touching}
       />
     </div>
@@ -190,9 +181,26 @@ const videosQuery = gql`
 `;
 
 const VideoSuspender = ({ video }) => (
-  <Suspense fallback="loading video...">
-    <VideoButton video={video} />
-  </Suspense>
+  <div
+    style={{
+      display: 'inline-block',
+      position: 'relative',
+      width: '100%',
+      height: '100%',
+      overflow: 'hidden',
+      border: '1px solid #223322',
+      WebkitTouchCallout: 'none',
+      WebkitUserSelect: 'none',
+      KhtmlUserSelect: 'none',
+      MozUseSelect: 'none',
+      MsUserSelect: 'none',
+      UserSelect: 'none',
+    }}
+  >
+    <Suspense fallback="loading video...">
+      <VideoButton video={video} />
+    </Suspense>
+  </div>
 );
 
 const Buttons = () => (
@@ -201,7 +209,7 @@ const Buttons = () => (
       if (loading) return 'loading...';
       // return <VideoSuspender key={data.videos[0].id} video={data.videos[0]} />;
       return fp.map(video => <VideoSuspender key={video.id} video={video} delayMs={0} />)(
-        data.videos.slice(0, 10)
+        data.videos.slice(0, 12)
       );
     }}
   </Query>
