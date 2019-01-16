@@ -32,7 +32,6 @@ const Player = () => {
         display: 'grid',
         gridTemplateRows: orientation === 'portrait' ? '1fr 1fr 1fr 1fr' : '1fr 1fr 1fr',
         gridTemplateColumns: orientation === 'portrait' ? '1fr 1fr 1fr' : '1fr 1fr 1fr 1fr',
-        backgroundColor: 'black',
       }}
     >
       <Buttons />

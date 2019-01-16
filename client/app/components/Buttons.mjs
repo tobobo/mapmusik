@@ -78,7 +78,8 @@ const tryResource = resource => (cache, key) => {
 
 const combinedLoader = (videoUrl, imageUrl, audioUrl) => {
   const resourceResults = [
-    tryResource(videoDataLoader)(videoCache, videoUrl),
+    null,
+    // tryResource(videoDataLoader)(videoCache, videoUrl),
     tryResource(imageDataLoader)(imageCache, imageUrl),
     tryResource(audioBufferLoader)(audioCache, audioUrl),
   ];
@@ -126,6 +127,7 @@ const VideoButton = ({ video }) => {
         position: 'relative',
         width: '100%',
         height: '100%',
+        opacity: touching ? '1' : '0.2',
       }}
       onMouseDown={() => {
         if (touching) return;
