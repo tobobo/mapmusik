@@ -1,4 +1,4 @@
-import React, { StrictMode } from 'react';
+import React, { useState } from 'react';
 import GoogleMapReact from 'google-map-react';
 import Div100vh from 'react-div-100vh';
 import ApolloClient from 'apollo-client';
@@ -14,23 +14,26 @@ const apolloClient = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-const App = () => (
-  <ApolloProvider client={apolloClient}>
-    {/* <StrictMode> */}
-    <Div100vh>
-      <div className="map-container" style={{ width: '100%', height: '100%' }}>
-        {/* <GoogleMapReact
-        bootstrapURLKeys={{ key: config.googleMaps.apiKey }}
-        defaultCenter={{ lat: 37.6937518, lng: -97.3775182 }}
-        defaultZoom={13}
-      /> */}
+const useToggle = (initialState = false) => {
+  const [enabled, setEnabled] = useState(initialState);
+  const enable = () => setEnabled(true);
+  const disable = () => setEnabled(false);
+  return { enabled, enable, disable };
+};
+
+const App = () => {
+  const { enabled: isShowingPlayer, enable: hidePlayer, disable: showPlayer } = useToggle(false);
+  return (
+    <ApolloProvider client={apolloClient}>
+      {/* <StrictMode> */}
+      <Div100vh>
         <div
           style={{
             height: '100%',
             width: '100%',
             display: 'grid',
-            gridTemplateRows: '40px 1fr 1fr 1fr 1fr',
-            gridTemplateColumns: '1fr 1fr 1fr',
+            gridTemplateRows: '40px 1fr',
+            gridTemplateColumns: '1fr',
             backgroundColor: 'black',
           }}
         >
@@ -42,14 +45,30 @@ const App = () => (
               gridColumnEnd: 'span 3',
             }}
           >
-            Toggle
+            <button onClick={showPlayer}>map</button>
+            <button onClick={hidePlayer}>Sampler</button>
           </div>
-          <Player />
+          <div>
+            <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+              <div
+                className="map-container"
+                style={{ width: '100%', height: '100%', position: 'absolute' }}
+              >
+                the map
+                {/* <GoogleMapReact
+        bootstrapURLKeys={{ key: config.googleMaps.apiKey }}
+        defaultCenter={{ lat: 37.6937518, lng: -97.3775182 }}
+        defaultZoom={13}
+      /> */}
+              </div>
+              {isShowingPlayer && <Player />}
+            </div>
+          </div>
         </div>
-      </div>
-    </Div100vh>
-    {/* </StrictMode> */}
-  </ApolloProvider>
-);
+      </Div100vh>
+      {/* </StrictMode> */}
+    </ApolloProvider>
+  );
+};
 
 export default App;
