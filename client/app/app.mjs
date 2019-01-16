@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import GoogleMapReact from 'google-map-react';
+import { withScriptjs, withGoogleMap, GoogleMap } from 'react-google-maps';
 import Div100vh from 'react-div-100vh';
 import ApolloClient from 'apollo-client';
+import flowRight from 'lodash/fp/flowRight';
 import { HttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloProvider } from 'react-apollo';
@@ -21,6 +22,11 @@ const useToggle = (initialState = false) => {
   const disable = () => setEnabled(false);
   return { enabled, enable, disable };
 };
+
+const Map = flowRight(
+  withScriptjs,
+  withGoogleMap
+)(() => <GoogleMap defaultZoom={14} defaultCenter={{ lat: 37.68, lng: -97.33 }} />);
 
 const App = () => {
   const { enabled: isShowingPlayer, enable: hidePlayer, disable: showPlayer } = useToggle(true);
@@ -55,10 +61,13 @@ const App = () => {
                 className="map-container"
                 style={{ width: '100%', height: '100%', position: 'absolute' }}
               >
-                <GoogleMapReact
-                  bootstrapURLKeys={{ key: config.googleMaps.apiKey }}
-                  defaultCenter={{ lat: 37.6860252, lng: -97.331 }}
-                  defaultZoom={14}
+                <Map
+                  googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${
+                    config.googleMaps.apiKey
+                  }&v=3.exp&libraries=geometry,drawing,places`}
+                  loadingElement={<div style={{ width: '100%', height: '100%' }} />}
+                  containerElement={<div style={{ width: '100%', height: '100%' }} />}
+                  mapElement={<div style={{ width: '100%', height: '100%' }} />}
                 />
               </div>
               {isShowingPlayer && <Player />}
