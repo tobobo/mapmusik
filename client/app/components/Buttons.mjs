@@ -104,6 +104,7 @@ const combinedLoader = (videoUrl, imageUrl, audioUrl) => {
 const playBuffer = buffer => {
   const source = audioContext.createBufferSource();
   source.buffer = buffer;
+  source.loop = true;
   source.connect(audioContext.destination);
   source.start(audioContext.currentTime);
   return source;
@@ -204,6 +205,7 @@ const VideoButton = ({ video, isActivatedByKeyboard }) => {
       <video
         autoPlay={false}
         controls={false}
+        loop
         muted
         playsInline
         ref={videoRef}
