@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, Suspense } from 'react';
+import React, { useRef, useState, useEffect, Suspense, memo } from 'react';
 import { createResource, createCache } from 'simple-cache-provider';
 import PropTypes from 'prop-types';
 import filter from 'lodash/fp/filter';
@@ -232,7 +232,8 @@ const videosQuery = gql`
   }
 `;
 
-const VideoSuspender = ({ video, isActivatedByKeyboard }) => (
+// eslint-disable-next-line react/display-name
+const VideoSuspender = memo(({ video, isActivatedByKeyboard }) => (
   <div
     style={{
       display: 'inline-block',
@@ -253,7 +254,7 @@ const VideoSuspender = ({ video, isActivatedByKeyboard }) => (
       <VideoButton video={video} isActivatedByKeyboard={isActivatedByKeyboard} />
     </Suspense>
   </div>
-);
+));
 
 const videoKeys = ['q', 'w', 'e', 'r', 'a', 's', 'd', 'f', 'z', 'x', 'c', 'v'];
 
