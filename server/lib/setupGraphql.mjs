@@ -13,6 +13,8 @@ const typeDefs = gql`
     videoUrl: String!
     thumbnailUrl: String!
     audioUrl: String!
+    lat: Float!
+    lng: Float!
   }
 `;
 

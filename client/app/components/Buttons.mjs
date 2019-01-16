@@ -113,7 +113,8 @@ const playBuffer = buffer => {
 const usePressedKeys = () => {
   const [pressedKeys, setPressedKeys] = useState([]);
   const addPressedKey = key => setPressedKeys(prevPressedKeys => union(prevPressedKeys)([key]));
-  const removePressedKey = key => setPressedKeys(prevPressedKeys => reject(equals(key))(prevPressedKeys));
+  const removePressedKey = key =>
+    setPressedKeys(prevPressedKeys => reject(equals(key))(prevPressedKeys));
   useEffect(() => {
     const onKeyDown = e => {
       const key = String.fromCharCode(e.keyCode || e.which);
@@ -223,17 +224,6 @@ VideoButton.propTypes = {
   }).isRequired,
 };
 
-const videosQuery = gql`
-  {
-    videos {
-      id
-      videoUrl
-      thumbnailUrl
-      audioUrl
-    }
-  }
-`;
-
 // eslint-disable-next-line react/display-name
 const VideoSuspender = memo(({ video, isActivatedByKeyboard }) => (
   <div
@@ -260,27 +250,19 @@ const VideoSuspender = memo(({ video, isActivatedByKeyboard }) => (
 
 const videoKeys = ['q', 'w', 'e', 'r', 'a', 's', 'd', 'f', 'z', 'x', 'c', 'v'];
 
-const Buttons = () => {
+const Buttons = ({ videos }) => {
   const isKeyPressed = usePressedKeys();
-  return (
-    <Query query={videosQuery}>
-      {({ loading, data }) => {
-        if (loading) return 'loading...';
-        // return <VideoSuspender key={data.videos[0].id} video={data.videos[0]} />;
-        return flow(
-          toPairs,
-          map(([index, video]) => (
-            <VideoSuspender
-              key={video.id}
-              video={video}
-              // eslint-disable-next-line security/detect-object-injection
-              isActivatedByKeyboard={isKeyPressed(videoKeys[index])}
-            />
-          ))
-        )(data.videos.slice(0, 12));
-      }}
-    </Query>
-  );
+  return flow(
+    toPairs,
+    map(([index, video]) => (
+      <VideoSuspender
+        key={video.id}
+        video={video}
+        // eslint-disable-next-line security/detect-object-injection
+        isActivatedByKeyboard={isKeyPressed(videoKeys[index])}
+      />
+    ))
+  )(videos.slice(0, 12));
 };
 
 export default Buttons;

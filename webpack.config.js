@@ -1,6 +1,7 @@
 module.exports = {
   mode: 'development',
   entry: ['babel-polyfill', './client/index.mjs'],
+  devtool: 'inline-source-map',
   module: {
     rules: [
       {
