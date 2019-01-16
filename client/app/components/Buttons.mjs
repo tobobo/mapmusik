@@ -1,8 +1,16 @@
-import React, { useRef, useState, Suspense } from 'react';
+import React, { useRef, useState, useEffect, Suspense } from 'react';
 import { createResource, createCache } from 'simple-cache-provider';
 import PropTypes from 'prop-types';
-import fp from 'lodash/fp';
+import filter from 'lodash/fp/filter';
+import flow from 'lodash/fp/flow';
+import union from 'lodash/fp/union';
+import map from 'lodash/fp/map';
 import gql from 'graphql-tag';
+import reject from 'lodash/fp/reject';
+import has from 'lodash/fp/has';
+import includes from 'lodash/fp/includes';
+import toPairs from 'lodash/fp/toPairs';
+import equals from 'lodash/fp/equals';
 import { Query } from 'react-apollo';
 
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -83,14 +91,14 @@ const combinedLoader = (videoUrl, imageUrl, audioUrl) => {
     tryResource(imageDataLoader)(imageCache, imageUrl),
     tryResource(audioBufferLoader)(audioCache, audioUrl),
   ];
-  const promises = fp.flow(
-    fp.filter(fp.has('promise')),
-    fp.map('promise')
+  const promises = flow(
+    filter(has('promise')),
+    map('promise')
   )(resourceResults);
   if (promises.length) {
     throw Promise.all(promises);
   }
-  return fp.map('resource')(resourceResults);
+  return map('resource')(resourceResults);
 };
 
 const playBuffer = buffer => {
@@ -101,7 +109,36 @@ const playBuffer = buffer => {
   return source;
 };
 
-const VideoButton = ({ video }) => {
+const usePressedKeys = () => {
+  const [pressedKeys, setPressedKeys] = useState([]);
+  const addPressedKey = key => setPressedKeys(prevPressedKeys => union(prevPressedKeys)([key]));
+  const removePressedKey = key => setPressedKeys(prevPressedKeys => reject(equals(key))(prevPressedKeys));
+  useEffect(() => {
+    const onKeyDown = e => {
+      const key = String.fromCharCode(e.keyCode || e.which);
+      addPressedKey(key.toLowerCase());
+    };
+    const onKeyUp = e => {
+      const key = String.fromCharCode(e.keyCode || e.which);
+      removePressedKey(key.toLowerCase());
+    };
+    const onBlur = () => {
+      setPressedKeys([]);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
+    window.addEventListener('blur', onBlur);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('keyup', onKeyUp);
+      window.removeEventListener('blur', onBlur);
+    };
+  }, []);
+
+  return key => includes(key.toLowerCase())(pressedKeys);
+};
+
+const VideoButton = ({ video, isActivatedByKeyboard }) => {
   const [touching, setTouching] = useState(false);
   const videoRef = useRef(null);
   const sourceRef = useRef(null);
@@ -120,6 +157,19 @@ const VideoButton = ({ video }) => {
     sourceRef.current.stop();
     isPlayingRef.current = false;
   };
+  useEffect(
+    () => {
+      if (touching === isActivatedByKeyboard) return;
+      if (isActivatedByKeyboard) {
+        setTouching(true);
+        play();
+      } else {
+        setTouching(false);
+        reset();
+      }
+    },
+    [isActivatedByKeyboard]
+  );
   return (
     <div
       style={{
@@ -182,7 +232,7 @@ const videosQuery = gql`
   }
 `;
 
-const VideoSuspender = ({ video }) => (
+const VideoSuspender = ({ video, isActivatedByKeyboard }) => (
   <div
     style={{
       display: 'inline-block',
@@ -200,21 +250,34 @@ const VideoSuspender = ({ video }) => (
     }}
   >
     <Suspense fallback="loading video...">
-      <VideoButton video={video} />
+      <VideoButton video={video} isActivatedByKeyboard={isActivatedByKeyboard} />
     </Suspense>
   </div>
 );
 
-const Buttons = () => (
-  <Query query={videosQuery}>
-    {({ loading, data }) => {
-      if (loading) return 'loading...';
-      // return <VideoSuspender key={data.videos[0].id} video={data.videos[0]} />;
-      return fp.map(video => <VideoSuspender key={video.id} video={video} delayMs={0} />)(
-        data.videos.slice(0, 12)
-      );
-    }}
-  </Query>
-);
+const videoKeys = ['q', 'w', 'e', 'r', 'a', 's', 'd', 'f', 'z', 'x', 'c', 'v'];
+
+const Buttons = () => {
+  const isKeyPressed = usePressedKeys();
+  return (
+    <Query query={videosQuery}>
+      {({ loading, data }) => {
+        if (loading) return 'loading...';
+        // return <VideoSuspender key={data.videos[0].id} video={data.videos[0]} />;
+        return flow(
+          toPairs,
+          map(([index, video]) => (
+            <VideoSuspender
+              key={video.id}
+              video={video}
+              // eslint-disable-next-line security/detect-object-injection
+              isActivatedByKeyboard={isKeyPressed(videoKeys[index])}
+            />
+          ))
+        )(data.videos.slice(0, 12));
+      }}
+    </Query>
+  );
+};
 
 export default Buttons;
