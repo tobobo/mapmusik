@@ -57,8 +57,8 @@ const App = () => {
               >
                 <GoogleMapReact
                   bootstrapURLKeys={{ key: config.googleMaps.apiKey }}
-                  defaultCenter={{ lat: 37.6937518, lng: -97.3775182 }}
-                  defaultZoom={13}
+                  defaultCenter={{ lat: 37.6860252, lng: -97.331 }}
+                  defaultZoom={14}
                 />
               </div>
               {isShowingPlayer && <Player />}
