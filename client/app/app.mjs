@@ -29,7 +29,11 @@ const Map = flowRight(
   withScriptjs,
   withGoogleMap
 )(() => (
-  <GoogleMap defaultZoom={14} defaultCenter={{ lat: 37.68, lng: -97.33 }} mapTypeControl={false} />
+  <GoogleMap
+    defaultZoom={14}
+    defaultCenter={{ lat: 37.68, lng: -97.33 }}
+    options={{ mapTypeControl: false, zoomControl: false, streetViewControl: false }}
+  />
 ));
 
 const videosQuery = gql`
@@ -46,7 +50,7 @@ const videosQuery = gql`
 `;
 
 const App = () => {
-  const { enabled: isShowingPlayer, enable: hidePlayer, disable: showPlayer } = useToggle(false);
+  const { enabled: isShowingPlayer, enable: hidePlayer, disable: showPlayer } = useToggle(true);
   return (
     <ApolloProvider client={apolloClient}>
       {/* <StrictMode> */}
@@ -58,12 +62,13 @@ const App = () => {
                 height: '100%',
                 width: '100%',
                 display: 'grid',
-                gridTemplateRows: '40px 1fr',
+                // gridTemplateRows: '40px 1fr',
+                gridTemplateRows: '1fr',
                 gridTemplateColumns: '1fr',
                 backgroundColor: 'black',
               }}
             >
-              <div
+              {/* <div
                 style={{
                   width: '100%',
                   height: '100%',
@@ -73,7 +78,7 @@ const App = () => {
               >
                 <button onClick={showPlayer}>map</button>
                 <button onClick={hidePlayer}>Sampler</button>
-              </div>
+              </div> */}
               <div>
                 <div style={{ position: 'relative', width: '100%', height: '100%' }}>
                   <div
@@ -85,10 +90,9 @@ const App = () => {
                         config.googleMaps.apiKey
                       }&v=3.exp&libraries=geometry,drawing,places`}
                       loadingElement={<div style={{ height: '100%' }} />}
-                      containerElement={<div style={{ height: '400px' }} />}
+                      containerElement={<div style={{ height: '100%' }} />}
                       mapElement={<div style={{ height: '100%' }} />}
                     >
-                      <Marker position={{ lat: 37.68, lng: -97.33 }} />
                       {/* {!loading &&
                         map(({ lat, lng, id }) => {debugger; return <Marker position={{ lat, lng }} key={id} />})(
                           data.videos

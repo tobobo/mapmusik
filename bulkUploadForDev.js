@@ -24,12 +24,8 @@ const createVideo = async (url, { mysqlAdapter }) => {
         id: videoId,
         upload_id: uploadId,
         encoder_job_id: jobId,
-        video_url: `https://${
-          config.aws.bucketName
-        }.s3.amazonaws.com/videos/${videoId}/video.360.mp4`,
-        thumbnail_url: `https://${
-          config.aws.bucketName
-        }.s3.amazonaws.com/videos/${videoId}/image.640.jpg`,
+        video_url: `${videoId}/video.360.mp4`,
+        thumbnail_url: `${videoId}/image.640.jpg`,
       })
     ),
   ]);

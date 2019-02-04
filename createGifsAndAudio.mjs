@@ -24,10 +24,8 @@ const main = async () => {
       });
       await mysqlAdapter.updateVideo({
         id: videoId,
-        gif_url: `https://${config.aws.bucketName}.s3.amazonaws.com/videos/${videoId}/gif.320.gif`,
-        audio_url: `https://${
-          config.aws.bucketName
-        }.s3.amazonaws.com/videos/${videoId}/mp3.128k.mp3`,
+        gif_url: `${videoId}/gif.320.gif`,
+        audio_url: `${videoId}/mp3.128k.mp3`,
       });
     })(uploadsWithVideoIds),
   ]);
