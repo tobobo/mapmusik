@@ -21,7 +21,7 @@ const useOrientation = () => {
   return orientation;
 };
 
-const Player = ({ videos }) => {
+const Player = ({ videos, isEditingVideos, showSelectorForIndex }) => {
   const orientation = useOrientation();
   return (
     <div
@@ -34,7 +34,11 @@ const Player = ({ videos }) => {
         gridTemplateColumns: orientation === 'portrait' ? '1fr 1fr 1fr' : '1fr 1fr 1fr 1fr',
       }}
     >
-      <Buttons videos={videos} />
+      <Buttons
+        videos={videos}
+        isEditingVideos={isEditingVideos}
+        showSelectorForIndex={showSelectorForIndex}
+      />
     </div>
   );
 };

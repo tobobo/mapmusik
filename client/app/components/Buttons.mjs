@@ -125,7 +125,7 @@ const usePressedKeys = () => {
   return key => includes(key.toLowerCase())(pressedKeys);
 };
 
-const VideoButton = ({ video, isActivatedByKeyboard }) => {
+const VideoButton = ({ video, isActivatedByKeyboard, isEditingVideos, showSelector }) => {
   const [touching, setTouching] = useState(false);
   const videoRef = useRef(null);
   const sourceRef = useRef(null);
@@ -168,23 +168,30 @@ const VideoButton = ({ video, isActivatedByKeyboard }) => {
         position: 'relative',
         width: '100%',
         height: '100%',
-        opacity: touching ? '1' : '0.2',
+        opacity: touching || isEditingVideos ? '1' : '0.2',
       }}
       onMouseDown={() => {
+        if (isEditingVideos) {
+          showSelector();
+          return;
+        }
         if (touching) return;
         setTouching(true);
         play();
       }}
       onTouchStart={() => {
+        if (isEditingVideos) return;
         setTouching(true);
         play();
       }}
       onMouseUp={() => {
+        if (isEditingVideos) return;
         if (!touching) return;
         setTouching(false);
         reset();
       }}
       onTouchEnd={() => {
+        if (isEditingVideos) return;
         setTouching(false);
         reset();
       }}
@@ -213,10 +220,10 @@ VideoButton.propTypes = {
   }).isRequired,
 };
 
-const AddVideo = () => 'add video';
+const AddVideo = () => <div style={{ width: '100%', height: '100%' }}>add video</div>;
 
 // eslint-disable-next-line react/display-name
-const VideoSuspender = memo(({ video, isActivatedByKeyboard }) => (
+const VideoSuspender = memo(({ video, isActivatedByKeyboard, isEditingVideos, showSelector }) => (
   <div
     style={{
       display: 'inline-block',
@@ -235,7 +242,12 @@ const VideoSuspender = memo(({ video, isActivatedByKeyboard }) => (
   >
     <Suspense fallback="loading video...">
       {video ? (
-        <VideoButton video={video} isActivatedByKeyboard={isActivatedByKeyboard} />
+        <VideoButton
+          video={video}
+          isActivatedByKeyboard={isActivatedByKeyboard}
+          isEditingVideos={isEditingVideos}
+          showSelector={showSelector}
+        />
       ) : (
         <AddVideo />
       )}
@@ -245,14 +257,17 @@ const VideoSuspender = memo(({ video, isActivatedByKeyboard }) => (
 
 const videoKeys = ['q', 'w', 'e', 'r', 'a', 's', 'd', 'f', 'z', 'x', 'c', 'v'];
 
-const Buttons = ({ videos }) => {
+const Buttons = ({ videos, isEditingVideos, showSelectorForIndex }) => {
   const isKeyPressed = usePressedKeys();
   return map(index => (
     <VideoSuspender
       key={index}
+      // eslint-disable-next-line security/detect-object-injection
       video={videos[index]}
       // eslint-disable-next-line security/detect-object-injection
       isActivatedByKeyboard={isKeyPressed(videoKeys[index])}
+      isEditingVideos={isEditingVideos}
+      showSelector={() => showSelectorForIndex(index)}
     />
   ))(range(0, 12));
 };
