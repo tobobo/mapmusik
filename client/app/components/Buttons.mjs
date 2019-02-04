@@ -220,7 +220,11 @@ VideoButton.propTypes = {
   }).isRequired,
 };
 
-const AddVideo = () => <div style={{ width: '100%', height: '100%' }}>add video</div>;
+const AddVideo = ({ showSelector }) => (
+  <div style={{ width: '100%', height: '100%' }} onClick={showSelector}>
+    add video
+  </div>
+);
 
 // eslint-disable-next-line react/display-name
 const VideoSuspender = memo(({ video, isActivatedByKeyboard, isEditingVideos, showSelector }) => (
@@ -249,7 +253,7 @@ const VideoSuspender = memo(({ video, isActivatedByKeyboard, isEditingVideos, sh
           showSelector={showSelector}
         />
       ) : (
-        <AddVideo />
+        <AddVideo showSelector={showSelector} />
       )}
     </Suspense>
   </div>
