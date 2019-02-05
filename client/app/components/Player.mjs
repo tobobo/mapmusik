@@ -31,6 +31,7 @@ const Player = ({ videos, isEditingVideos, showSelectorForIndex }) => {
         height: '100%',
         width: '100%',
         display: 'grid',
+        gridGap: '1px',
         gridTemplateRows: orientation === 'portrait' ? '1fr 1fr 1fr 1fr' : '1fr 1fr 1fr',
         gridTemplateColumns: orientation === 'portrait' ? '1fr 1fr 1fr' : '1fr 1fr 1fr 1fr',
       }}

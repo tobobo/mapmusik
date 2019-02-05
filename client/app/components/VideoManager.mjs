@@ -101,7 +101,7 @@ const VideoManager = ({ loading, data }) => {
             <Modal
               isOpen={true}
               onRequestClose={hideSelector}
-              css={{
+              style={{
                 content: {
                   width: '100%',
                   maxWidth: '600px',

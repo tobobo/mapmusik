@@ -36,8 +36,8 @@ const imageDataLoader = createResource(
     })
 );
 
-const ImagePreview = ({ video: { thumbnailUrl }, hidden }) => (
-  <img css={{ width: '100%' }} hidden={hidden} src={`${config.assetPrefix}${thumbnailUrl}`} />
+const ImagePreview = ({ video: { thumbnailUrl } }) => (
+  <img css={{ width: '100%' }} src={`${config.assetPrefix}${thumbnailUrl}`} />
 );
 
 ImagePreview.propTypes = {
@@ -245,7 +245,7 @@ const VideoSuspender = memo(({ video, isActivatedByKeyboard, isEditingVideos, sh
       width: '100%',
       height: '100%',
       overflow: 'hidden',
-      border: '1px solid #223322',
+      boxShadow: '0 0 1px black',
       WebkitTouchCallout: 'none',
       WebkitUserSelect: 'none',
       KhtmlUserSelect: 'none',
