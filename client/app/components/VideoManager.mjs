@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { withScriptjs, withGoogleMap, GoogleMap, Marker, InfoWindow } from 'react-google-maps';
+import PropTypes from 'prop-types';
+import { withScriptjs, withGoogleMap, GoogleMap } from 'react-google-maps';
 import Modal from 'react-modal';
 import flowRight from 'lodash/fp/flowRight';
 import isEmpty from 'lodash/fp/isEmpty';
@@ -32,6 +33,7 @@ const VideoManager = ({ loading, data }) => {
     setVideos(prevVideos => [...prevVideos.slice(0, index), video, ...prevVideos.slice(index + 1)]);
   };
 
+  // eslint-disable-next-line no-unused-vars
   const { enabled: isShowingPlayer, enable: hidePlayer, disable: showPlayer } = useToggle(true);
   const { enabled: isEditingVideos, enable: editVideos, disable: finishEditingVideos } = useToggle(
     false
@@ -133,6 +135,13 @@ const VideoManager = ({ loading, data }) => {
       </div>
     </div>
   );
+};
+
+VideoManager.propTypes = {
+  loading: PropTypes.bool.isRequired,
+  data: PropTypes.shape({
+    video: PropTypes.arrayOf(PropTypes.object).isRequired,
+  }),
 };
 
 export default VideoManager;

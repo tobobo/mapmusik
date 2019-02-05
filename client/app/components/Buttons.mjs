@@ -5,13 +5,11 @@ import filter from 'lodash/fp/filter';
 import flow from 'lodash/fp/flow';
 import union from 'lodash/fp/union';
 import map from 'lodash/fp/map';
-import gql from 'graphql-tag';
-import reject from 'lodash/fp/reject';
 import has from 'lodash/fp/has';
 import range from 'lodash/fp/range';
 import includes from 'lodash/fp/includes';
-import toPairs from 'lodash/fp/toPairs';
 import equals from 'lodash/fp/equals';
+import negate from 'lodash/fp/negate';
 import config from '../../../config/client.json';
 
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -41,6 +39,11 @@ const imageDataLoader = createResource(
 const ImagePreview = ({ video: { thumbnailUrl }, hidden }) => (
   <img style={{ width: '100%' }} hidden={hidden} src={`${config.assetPrefix}${thumbnailUrl}`} />
 );
+
+ImagePreview.propTypes = {
+  video: PropTypes.object.isRequired,
+  hidden: PropTypes.bool.isRequired,
+};
 
 const audioBufferLoader = createResource(async url => {
   const response = await fetch(`${config.assetPrefix}${url}`);
@@ -99,7 +102,7 @@ const usePressedKeys = () => {
   const [pressedKeys, setPressedKeys] = useState([]);
   const addPressedKey = key => setPressedKeys(prevPressedKeys => union(prevPressedKeys)([key]));
   const removePressedKey = key =>
-    setPressedKeys(prevPressedKeys => reject(equals(key))(prevPressedKeys));
+    setPressedKeys(prevPressedKeys => filter(negate(equals(key)))(prevPressedKeys));
   useEffect(() => {
     const onKeyDown = e => {
       const key = String.fromCharCode(e.keyCode || e.which);
@@ -218,6 +221,9 @@ VideoButton.propTypes = {
   video: PropTypes.shape({
     videoUrl: PropTypes.string.isRequired,
   }).isRequired,
+  isActivatedByKeyboard: PropTypes.bool.isRequired,
+  isEditingVideos: PropTypes.bool.isRequired,
+  showSelector: PropTypes.func.isRequired,
 };
 
 const AddVideo = ({ showSelector }) => (
@@ -225,6 +231,10 @@ const AddVideo = ({ showSelector }) => (
     add video
   </div>
 );
+
+AddVideo.propTypes = {
+  showSelector: PropTypes.func.isRequired,
+};
 
 // eslint-disable-next-line react/display-name
 const VideoSuspender = memo(({ video, isActivatedByKeyboard, isEditingVideos, showSelector }) => (
@@ -259,6 +269,13 @@ const VideoSuspender = memo(({ video, isActivatedByKeyboard, isEditingVideos, sh
   </div>
 ));
 
+VideoSuspender.propTypes = {
+  video: PropTypes.object.isRequired,
+  isActivatedByKeyboard: PropTypes.bool.isRequired,
+  isEditingVideos: PropTypes.bool.isRequired,
+  showSelector: PropTypes.bool.isRequired,
+};
+
 const videoKeys = ['q', 'w', 'e', 'r', 'a', 's', 'd', 'f', 'z', 'x', 'c', 'v'];
 
 const Buttons = ({ videos, isEditingVideos, showSelectorForIndex }) => {
@@ -275,5 +292,11 @@ const Buttons = ({ videos, isEditingVideos, showSelectorForIndex }) => {
     />
   ))(range(0, 12));
 };
+
+Buttons.propTYpes = {
+  videos: PropTypes.arrayOf(PropTypes.object).isRequired,
+  isEditiingVIdeos: PropTypes.bool.isRequired,
+  showSelectorForIndex: PropTypes.func.isRequired,
+}
 
 export default Buttons;

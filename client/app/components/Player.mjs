@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import debounce from 'lodash/debounce';
 import Buttons from './Buttons.mjs';
 
@@ -41,6 +42,12 @@ const Player = ({ videos, isEditingVideos, showSelectorForIndex }) => {
       />
     </div>
   );
+};
+
+Player.propTypes = {
+  videos: PropTypes.arrayOf(PropTypes.object).isRequired,
+  isEditingVideos: PropTypes.bool.isRequired,
+  showSelectorForIndex: PropTypes.func.isRequired,
 };
 
 export default Player;
