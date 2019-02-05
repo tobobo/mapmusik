@@ -5,6 +5,7 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import gql from 'graphql-tag';
 import ApolloClient from 'apollo-client';
 import { ApolloProvider, Query } from 'react-apollo';
+import { Global, css } from '@emotion/core';
 import VideoManager from './components/VideoManager.mjs';
 
 const apolloClient = new ApolloClient({
@@ -18,6 +19,7 @@ const videosQuery = gql`
   {
     videos {
       id
+      createdAt
       videoUrl
       thumbnailUrl
       audioUrl
@@ -28,7 +30,14 @@ const videosQuery = gql`
 `;
 
 const App = () => (
-  <div css={{ fontFamily: 'Helvetica Neue' }}>
+  <React.Fragment>
+    <Global
+      styles={css`
+        * {
+          font-family: 'Helvetica Neue';
+        }
+      `}
+    />
     <ApolloProvider client={apolloClient}>
       {/* <StrictMode> */}
       <Div100vh>
@@ -38,7 +47,7 @@ const App = () => (
       </Div100vh>
       {/* </StrictMode> */}
     </ApolloProvider>
-  </div>
+  </React.Fragment>
 );
 
 export default App;

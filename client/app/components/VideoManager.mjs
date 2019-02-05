@@ -5,29 +5,15 @@ import Modal from 'react-modal';
 import flowRight from 'lodash/fp/flowRight';
 import isEmpty from 'lodash/fp/isEmpty';
 import map from 'lodash/fp/map';
+import range from 'lodash/fp/range';
+import format from 'date-fns/fp/format';
 import Player from './Player.mjs';
 import useToggle from '../lib/useToggle.js';
 import styles from '../styles.mjs';
 import config from '../../../config/client.json';
-import { Button } from '../styleguide.mjs';
+import { Button, HeaderButton } from '../styleguide.mjs';
 
 const headerHeight = '40px';
-
-const HeaderButton = props => (
-  <Button
-    css={{
-      display: 'inline-block',
-      height: headerHeight,
-      lineHeight: headerHeight,
-      backgroundColor: 'transparent',
-      border: 0,
-      color: styles.textColor,
-      textDecoration: 'underline',
-      float: 'left',
-    }}
-    {...props}
-  />
-);
 
 const Map = flowRight(
   withScriptjs,
@@ -58,7 +44,7 @@ const VideoManager = ({ loading, data }) => {
   const [videos, setVideos] = useState([]);
   useEffect(
     () => {
-      if (isEmpty(videos) && data && data.videos) setVideos(data.videos);
+      if (isEmpty(videos) && data && data.videos) setVideos(map(i => data.videos[i])(range(0, 12)));
     },
     [data]
   );
@@ -138,6 +124,7 @@ const VideoManager = ({ loading, data }) => {
               onRequestClose={hideSelector}
               style={{
                 content: {
+                  padding: 0,
                   width: '100%',
                   maxWidth: '600px',
                   height: '100%',
@@ -151,22 +138,53 @@ const VideoManager = ({ loading, data }) => {
                 },
               }}
             >
-              <Button onClick={hideSelector}>Cancel</Button>
-              <ul>
-                {data.videos &&
-                  map(video => (
-                    <li>
-                      <img
-                        width={100}
-                        src={`${config.assetPrefix}${video.thumbnailUrl}`}
-                        onClick={() => {
-                          setVideoAtIndex(selectingVideoIndex, video);
-                          hideSelector();
-                        }}
-                      />
-                    </li>
-                  ))(data.videos)}
-              </ul>
+              <div
+                css={{
+                  width: '100%',
+                  top: 0,
+                  height: headerHeight,
+                  position: 'sticky',
+                  backgroundColor: styles.backgroundColor,
+                }}
+              >
+                <HeaderButton
+                  style={{ float: 'right', margin: '0 10px 0 0' }}
+                  onClick={hideSelector}
+                >
+                  Cancel
+                </HeaderButton>
+              </div>
+              {data.videos &&
+                map(video => (
+                  <Button
+                    css={{
+                      height: 200,
+                      width: '100%',
+                      backgroundColor: 'transparent',
+                      color: styles.textColor,
+                      border: 0,
+                      fontSize: '16px',
+                      padding: '0 0 0 10px',
+                      borderBottom: `1px solid ${styles.borderColor}`,
+                      'media screen and (min-width: 480px)': {
+                        fontSize: '24px',
+                        height: 100,
+                      }
+                    }}
+                    onClick={() => {
+                      setVideoAtIndex(selectingVideoIndex, video);
+                      hideSelector();
+                    }}
+                  >
+                    <div css={{ float: 'left', lineHeight: '200px' }}>
+                      {`${format('MMMM do, yyyy, h:mm a')(new Date(video.createdAt))}`}
+                    </div>
+                    <img
+                      css={{ height: '100%', float: 'right' }}
+                      src={`${config.assetPrefix}${video.thumbnailUrl}`}
+                    />
+                  </Button>
+                ))(data.videos)}
             </Modal>
           )}
         </div>

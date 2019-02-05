@@ -10,6 +10,7 @@ const typeDefs = gql`
 
   type Video {
     id: ID!
+    createdAt: String!
     videoUrl: String!
     thumbnailUrl: String!
     audioUrl: String!
@@ -27,6 +28,7 @@ const resolvers = {
     videoUrl: fp.get('video_url'),
     thumbnailUrl: fp.get('thumbnail_url'),
     audioUrl: fp.get('audio_url'),
+    createdAt: video => new Date(video.created_at).toJSON(),
   },
 };
 

@@ -13,7 +13,6 @@ import negate from 'lodash/fp/negate';
 import GridLoader from 'react-spinners/GridLoader';
 import config from '../../../config/client.json';
 import styles from '../styles.mjs';
-import { Button } from '../styleguide.mjs';
 
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -256,18 +255,19 @@ VideoButton.propTypes = {
 
 const NoVideo = ({ isEditingVideos, showSelector }) =>
   isEditingVideos ? (
-    <Button
+    <div
       css={{
         width: '100%',
         height: '100%',
         position: 'relative',
         backgroundColor: 'transparent',
         border: '0',
+        cursor: 'pointer',
       }}
       onClick={showSelector}
     >
       <VideoOverlayText>add video</VideoOverlayText>
-    </Button>
+    </div>
   ) : null;
 
 NoVideo.propTypes = {
