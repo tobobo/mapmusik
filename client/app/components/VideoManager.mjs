@@ -7,12 +7,11 @@ import isEmpty from 'lodash/fp/isEmpty';
 import map from 'lodash/fp/map';
 import Player from './Player.mjs';
 import useToggle from '../lib/useToggle.js';
+import styles from '../styles.mjs';
 import config from '../../../config/client.json';
+import { Button } from '../styleguide.mjs';
 
-const textColor = 'white';
 const headerHeight = '40px';
-
-const Button = props => <button css={{ cursor: 'pointer' }} {...props} />;
 
 const HeaderButton = props => (
   <Button
@@ -22,8 +21,9 @@ const HeaderButton = props => (
       lineHeight: headerHeight,
       backgroundColor: 'transparent',
       border: 0,
-      color: textColor,
+      color: styles.textColor,
       textDecoration: 'underline',
+      float: 'left',
     }}
     {...props}
   />
@@ -46,8 +46,9 @@ const Title = props => (
       display: 'inline-block',
       fontSize: 24,
       lineHeight: headerHeight,
-      color: textColor,
+      color: styles.textColor,
       margin: '0 20px 0 5px',
+      float: 'left',
     }}
     {...props}
   />
@@ -143,6 +144,9 @@ const VideoManager = ({ loading, data }) => {
                   maxHeight: '600px',
                   top: '50%',
                   left: '50%',
+                  backgroundColor: styles.backgroundColor,
+                  border: `1px solid ${styles.borderColor}`,
+                  borderRadius: '5px',
                   transform: 'translate(-50%,-50%)',
                 },
               }}

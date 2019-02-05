@@ -10,7 +10,10 @@ import range from 'lodash/fp/range';
 import includes from 'lodash/fp/includes';
 import equals from 'lodash/fp/equals';
 import negate from 'lodash/fp/negate';
+import GridLoader from 'react-spinners/GridLoader';
 import config from '../../../config/client.json';
+import styles from '../styles.mjs';
+import { Button } from '../styleguide.mjs';
 
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -128,6 +131,29 @@ const usePressedKeys = () => {
   return key => includes(key.toLowerCase())(pressedKeys);
 };
 
+const VideoOverlayText = ({ children, ...props }) => (
+  <div css={{ position: 'relative', height: '100%', width: '100%' }} {...props}>
+    <div
+      css={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        padding: '5px 10px',
+        backgroundColor: 'rgba(0, 0, 0, 0.25)',
+        borderRadius: '5px',
+        color: styles.textColor,
+      }}
+    >
+      {children}
+    </div>
+  </div>
+);
+
+VideoOverlayText.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
 const VideoButton = ({ video, isActivatedByKeyboard, isEditingVideos, showSelector }) => {
   const [touching, setTouching] = useState(false);
   const videoRef = useRef(null);
@@ -153,7 +179,7 @@ const VideoButton = ({ video, isActivatedByKeyboard, isEditingVideos, showSelect
   };
   useEffect(
     () => {
-      if (touching === isActivatedByKeyboard) return;
+      if (touching === isActivatedByKeyboard || isEditingVideos) return;
       if (isActivatedByKeyboard) {
         setTouching(true);
         play();
@@ -172,6 +198,7 @@ const VideoButton = ({ video, isActivatedByKeyboard, isEditingVideos, showSelect
         width: '100%',
         height: '100%',
         opacity: touching || isEditingVideos ? '1' : '0.2',
+        cursor: 'pointer',
       }}
       onMouseDown={() => {
         if (isEditingVideos) {
@@ -199,7 +226,7 @@ const VideoButton = ({ video, isActivatedByKeyboard, isEditingVideos, showSelect
         reset();
       }}
     >
-      <div css={{ position: 'absolute' }}>
+      <div css={{ position: 'absolute', top: 0, left: 0 }}>
         <ImagePreview video={video} />
       </div>
       <video
@@ -210,9 +237,10 @@ const VideoButton = ({ video, isActivatedByKeyboard, isEditingVideos, showSelect
         playsInline
         ref={videoRef}
         src={videoObjectUrl}
-        css={{ position: 'absolute', width: '100%' }}
+        css={{ position: 'absolute', width: '100%', top: 0, left: 0 }}
         hidden={!touching}
       />
+      {isEditingVideos && <VideoOverlayText>change video</VideoOverlayText>}
     </div>
   );
 };
@@ -226,14 +254,23 @@ VideoButton.propTypes = {
   showSelector: PropTypes.func.isRequired,
 };
 
-const AddVideo = ({ isEditingVideos, showSelector }) =>
+const NoVideo = ({ isEditingVideos, showSelector }) =>
   isEditingVideos ? (
-    <div css={{ width: '100%', height: '100%' }} onClick={showSelector}>
-      add video
-    </div>
+    <Button
+      css={{
+        width: '100%',
+        height: '100%',
+        position: 'relative',
+        backgroundColor: 'transparent',
+        border: '0',
+      }}
+      onClick={showSelector}
+    >
+      <VideoOverlayText>add video</VideoOverlayText>
+    </Button>
   ) : null;
 
-AddVideo.propTypes = {
+NoVideo.propTypes = {
   isEditingVideos: PropTypes.bool.isRequired,
   showSelector: PropTypes.func.isRequired,
 };
@@ -256,7 +293,26 @@ const VideoSuspender = memo(({ video, isActivatedByKeyboard, isEditingVideos, sh
       UserSelect: 'none',
     }}
   >
-    <Suspense fallback="loading video...">
+    <Suspense
+      fallback={
+        <div style={{ position: 'relative', height: '100%', width: '100%', opacity: 0.5 }}>
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+            }}
+          >
+            <GridLoader
+              css={{
+                opacity: 0.5,
+              }}
+            />
+          </div>
+        </div>
+      }
+    >
       {video ? (
         <VideoButton
           video={video}
@@ -265,7 +321,7 @@ const VideoSuspender = memo(({ video, isActivatedByKeyboard, isEditingVideos, sh
           showSelector={showSelector}
         />
       ) : (
-        <AddVideo isEditingVideos={isEditingVideos} showSelector={showSelector} />
+        <NoVideo isEditingVideos={isEditingVideos} showSelector={showSelector} />
       )}
     </Suspense>
   </div>
