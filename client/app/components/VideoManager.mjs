@@ -9,6 +9,26 @@ import Player from './Player.mjs';
 import useToggle from '../lib/useToggle.js';
 import config from '../../../config/client.json';
 
+const textColor = 'white';
+const headerHeight = '40px';
+
+const Button = props => <button css={{ cursor: 'pointer' }} {...props} />;
+
+const HeaderButton = props => (
+  <Button
+    css={{
+      display: 'inline-block',
+      height: headerHeight,
+      lineHeight: headerHeight,
+      backgroundColor: 'transparent',
+      border: 0,
+      color: textColor,
+      textDecoration: 'underline',
+    }}
+    {...props}
+  />
+);
+
 const Map = flowRight(
   withScriptjs,
   withGoogleMap
@@ -19,6 +39,19 @@ const Map = flowRight(
     options={{ mapTypeControl: false, zoomControl: false, streetViewControl: false }}
   />
 ));
+
+const Title = props => (
+  <h1
+    css={{
+      display: 'inline-block',
+      fontSize: 24,
+      lineHeight: headerHeight,
+      color: textColor,
+      margin: '0 20px 0 5px',
+    }}
+    {...props}
+  />
+);
 
 const VideoManager = ({ loading, data }) => {
   const [videos, setVideos] = useState([]);
@@ -49,7 +82,7 @@ const VideoManager = ({ loading, data }) => {
         height: '100%',
         width: '100%',
         display: 'grid',
-        gridTemplateRows: '40px 1fr',
+        gridTemplateRows: `${headerHeight} 1fr`,
         gridTemplateColumns: '1fr',
         backgroundColor: 'black',
       }}
@@ -62,12 +95,13 @@ const VideoManager = ({ loading, data }) => {
           gridColumnEnd: 'span 3',
         }}
       >
-        {/* <button onClick={showPlayer}>map</button>
-    <button onClick={hidePlayer}>Sampler</button> */}
+        {/* <Button onClick={showPlayer}>map</Button>
+    <Button onClick={hidePlayer}>Sampler</Button> */}
+        <Title>MapMusik</Title>
         {isEditingVideos ? (
-          <button onClick={finishEditingVideos}>Play videos</button>
+          <HeaderButton onClick={finishEditingVideos}>ready to play!</HeaderButton>
         ) : (
-          <button onClick={editVideos}>Select videos</button>
+          <HeaderButton onClick={editVideos}>change videos</HeaderButton>
         )}
       </div>
       <div>
@@ -113,7 +147,7 @@ const VideoManager = ({ loading, data }) => {
                 },
               }}
             >
-              <button onClick={hideSelector}>Cancel</button>
+              <Button onClick={hideSelector}>Cancel</Button>
               <ul>
                 {data.videos &&
                   map(video => (

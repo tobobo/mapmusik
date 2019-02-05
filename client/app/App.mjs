@@ -28,15 +28,17 @@ const videosQuery = gql`
 `;
 
 const App = () => (
-  <ApolloProvider client={apolloClient}>
-    {/* <StrictMode> */}
-    <Div100vh>
-      <Query query={videosQuery}>
-        {({ loading, data }) => <VideoManager loading={loading} data={data} />}
-      </Query>
-    </Div100vh>
-    {/* </StrictMode> */}
-  </ApolloProvider>
+  <div css={{ fontFamily: 'Helvetica Neue' }}>
+    <ApolloProvider client={apolloClient}>
+      {/* <StrictMode> */}
+      <Div100vh>
+        <Query query={videosQuery}>
+          {({ loading, data }) => <VideoManager loading={loading} data={data} />}
+        </Query>
+      </Div100vh>
+      {/* </StrictMode> */}
+    </ApolloProvider>
+  </div>
 );
 
 export default App;

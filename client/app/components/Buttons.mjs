@@ -226,13 +226,15 @@ VideoButton.propTypes = {
   showSelector: PropTypes.func.isRequired,
 };
 
-const AddVideo = ({ showSelector }) => (
-  <div css={{ width: '100%', height: '100%' }} onClick={showSelector}>
-    add video
-  </div>
-);
+const AddVideo = ({ isEditingVideos, showSelector }) =>
+  isEditingVideos ? (
+    <div css={{ width: '100%', height: '100%' }} onClick={showSelector}>
+      add video
+    </div>
+  ) : null;
 
 AddVideo.propTypes = {
+  isEditingVideos: PropTypes.bool.isRequired,
   showSelector: PropTypes.func.isRequired,
 };
 
@@ -263,7 +265,7 @@ const VideoSuspender = memo(({ video, isActivatedByKeyboard, isEditingVideos, sh
           showSelector={showSelector}
         />
       ) : (
-        <AddVideo showSelector={showSelector} />
+        <AddVideo isEditingVideos={isEditingVideos} showSelector={showSelector} />
       )}
     </Suspense>
   </div>
@@ -297,6 +299,6 @@ Buttons.propTYpes = {
   videos: PropTypes.arrayOf(PropTypes.object).isRequired,
   isEditiingVIdeos: PropTypes.bool.isRequired,
   showSelectorForIndex: PropTypes.func.isRequired,
-}
+};
 
 export default Buttons;
