@@ -45,7 +45,7 @@ const VideoManager = ({ loading, data }) => {
 
   return (
     <div
-      style={{
+      css={{
         height: '100%',
         width: '100%',
         display: 'grid',
@@ -55,7 +55,7 @@ const VideoManager = ({ loading, data }) => {
       }}
     >
       <div
-        style={{
+        css={{
           width: '100%',
           height: '100%',
           backgroundColor: '#333333',
@@ -71,18 +71,18 @@ const VideoManager = ({ loading, data }) => {
         )}
       </div>
       <div>
-        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+        <div css={{ position: 'relative', width: '100%', height: '100%' }}>
           <div
             className="map-container"
-            style={{ width: '100%', height: '100%', position: 'absolute' }}
+            css={{ width: '100%', height: '100%', position: 'absolute' }}
           >
             <Map
               googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${
                 config.googleMaps.apiKey
               }&v=3.exp&libraries=geometry,drawing,places`}
-              loadingElement={<div style={{ height: '100%' }} />}
-              containerElement={<div style={{ height: '100%' }} />}
-              mapElement={<div style={{ height: '100%' }} />}
+              loadingElement={<div css={{ height: '100%' }} />}
+              containerElement={<div css={{ height: '100%' }} />}
+              mapElement={<div css={{ height: '100%' }} />}
             >
               {/* {!loading &&
             map(({ lat, lng, id }) => {debugger; return <Marker position={{ lat, lng }} key={id} />})(
@@ -101,7 +101,7 @@ const VideoManager = ({ loading, data }) => {
             <Modal
               isOpen={true}
               onRequestClose={hideSelector}
-              style={{
+              css={{
                 content: {
                   width: '100%',
                   maxWidth: '600px',

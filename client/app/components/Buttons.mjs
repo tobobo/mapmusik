@@ -37,7 +37,7 @@ const imageDataLoader = createResource(
 );
 
 const ImagePreview = ({ video: { thumbnailUrl }, hidden }) => (
-  <img style={{ width: '100%' }} hidden={hidden} src={`${config.assetPrefix}${thumbnailUrl}`} />
+  <img css={{ width: '100%' }} hidden={hidden} src={`${config.assetPrefix}${thumbnailUrl}`} />
 );
 
 ImagePreview.propTypes = {
@@ -166,7 +166,7 @@ const VideoButton = ({ video, isActivatedByKeyboard, isEditingVideos, showSelect
   );
   return (
     <div
-      style={{
+      css={{
         display: 'inline-block',
         position: 'relative',
         width: '100%',
@@ -199,7 +199,7 @@ const VideoButton = ({ video, isActivatedByKeyboard, isEditingVideos, showSelect
         reset();
       }}
     >
-      <div style={{ position: 'absolute' }}>
+      <div css={{ position: 'absolute' }}>
         <ImagePreview video={video} />
       </div>
       <video
@@ -210,7 +210,7 @@ const VideoButton = ({ video, isActivatedByKeyboard, isEditingVideos, showSelect
         playsInline
         ref={videoRef}
         src={videoObjectUrl}
-        style={{ position: 'absolute', width: '100%' }}
+        css={{ position: 'absolute', width: '100%' }}
         hidden={!touching}
       />
     </div>
@@ -227,7 +227,7 @@ VideoButton.propTypes = {
 };
 
 const AddVideo = ({ showSelector }) => (
-  <div style={{ width: '100%', height: '100%' }} onClick={showSelector}>
+  <div css={{ width: '100%', height: '100%' }} onClick={showSelector}>
     add video
   </div>
 );
@@ -239,7 +239,7 @@ AddVideo.propTypes = {
 // eslint-disable-next-line react/display-name
 const VideoSuspender = memo(({ video, isActivatedByKeyboard, isEditingVideos, showSelector }) => (
   <div
-    style={{
+    css={{
       display: 'inline-block',
       position: 'relative',
       width: '100%',

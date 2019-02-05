@@ -26,7 +26,7 @@ const Player = ({ videos, isEditingVideos, showSelectorForIndex }) => {
   const orientation = useOrientation();
   return (
     <div
-      style={{
+      css={{
         position: 'absolute',
         height: '100%',
         width: '100%',
