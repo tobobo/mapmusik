@@ -4,6 +4,7 @@ import path from 'path';
 import process from 'process';
 import setupGraphql from './lib/setupGraphql.mjs';
 import config from '../config/server.js';
+import routes from './routes.mjs';
 
 const app = express();
 
@@ -14,6 +15,8 @@ const start = ({ mysqlAdapter }) => {
 
   app.use('/bundle', express.static('./prod-bundle'));
   app.use('/public', express.static('./client/public'));
+
+  routes(app);
 
   app.get('*', (req, res) => res.sendFile(path.join(process.cwd(), './client/index.html')));
 

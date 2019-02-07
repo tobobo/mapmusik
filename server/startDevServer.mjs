@@ -9,6 +9,7 @@ import axios from 'axios';
 import setupGraphql from './lib/setupGraphql.mjs';
 import config from '../config/server.js';
 import webpackConfig from '../webpack.config.js';
+import routes from './routes.mjs';
 
 const app = express();
 
@@ -37,6 +38,8 @@ const start = ({ mysqlAdapter }) => {
       })
       .catch(next);
   });
+
+  routes(app);
 
   app.get('*', (req, res) => res.sendFile(path.join(process.cwd(), './client/index.html')));
 

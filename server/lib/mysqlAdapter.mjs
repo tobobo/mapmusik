@@ -7,7 +7,10 @@ export default connection => {
   const getUploads = ({ limit = 100 } = {}) =>
     connection.query('select * from uploads limit = ?', [limit]);
   const getVideos = ({ limit = 100 } = {}) =>
-    connection.query('select * from videos order by created_at desc limit ?', [limit]);
+    connection.query(
+      'select * from videos where video_url is not null order by created_at desc limit ?',
+      [limit]
+    );
   const createVideo = video =>
     connection.query(`insert into videos SET ?`, { created_at: new Date(), ...video });
   const updateVideo = ({ id, ...video }) => {

@@ -21,8 +21,9 @@ const transcodeVideo = (videoId, sourceUrl, coconutOptions) =>
         source: sourceUrl,
         webhook: 'https://app.coconut.co/tools/webhooks/1a95362a/tobobo',
         outputs: {
-          'mp4:360p': `${s3BaseUrl}/videos/${videoId}/video.360.mp4`,
+          'mp4:360p:x': `${s3BaseUrl}/videos/${videoId}/video.360.mp4`,
           'jpg:640x': `${s3BaseUrl}/videos/${videoId}/image.640.jpg`,
+          mp3: `${s3BaseUrl}/videos/${videoId}/mp3.128k.mp3`,
         },
         ...coconutOptions,
       },
