@@ -11,7 +11,7 @@ import includes from 'lodash/fp/includes';
 import equals from 'lodash/fp/equals';
 import negate from 'lodash/fp/negate';
 import GridLoader from 'react-spinners/GridLoader';
-import config from '../../../config/client.json';
+import config from '../../../config/client.js';
 import styles from '../styles.mjs';
 
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();

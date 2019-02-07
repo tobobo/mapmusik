@@ -7,7 +7,7 @@ import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import axios from 'axios';
 import setupGraphql from './lib/setupGraphql.mjs';
-import config from '../config/server.json';
+import config from '../config/server.js';
 import webpackConfig from '../webpack.config.js';
 
 const app = express();
