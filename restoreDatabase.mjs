@@ -3,7 +3,7 @@ import mysql from 'promise-mysql';
 import fp from 'lodash/fp';
 import path from 'path';
 import createMysqlAdapter from './server/lib/mysqlAdapter';
-import config from './config/server.js';
+import config from './config/server.mjs';
 
 const s3Client = s3.createClient({
   s3Options: {

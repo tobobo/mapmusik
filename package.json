@@ -5,7 +5,8 @@
   "main": "index.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --experimental-modules --inspect index.mjs"
+    "start": "nodemon --experimental-modules --inspect index.mjs",
+    "production": "node --experimental-modules index.mjs"
   },
   "author": "",
   "license": "ISC",
@@ -61,7 +62,9 @@
     "eslint-plugin-react": "^7.12.0",
     "eslint-plugin-security": "^1.4.0",
     "prettier": "^1.15.3",
+    "uglifyjs-webpack-plugin": "^2.1.1",
     "webpack": "^4.28.3",
+    "webpack-bundle-analyzer": "^3.0.3",
     "webpack-cli": "^3.1.2",
     "webpack-dev-middleware": "^3.5.0",
     "webpack-dev-server": "^3.1.14"

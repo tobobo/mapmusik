@@ -10,7 +10,7 @@ import format from 'date-fns/fp/format';
 import Player from './Player.mjs';
 import useToggle from '../lib/useToggle.js';
 import styles from '../styles.mjs';
-import config from '../../../config/client.js';
+import config from '../../../config/client.mjs';
 import { Button, HeaderButton } from '../styleguide.mjs';
 
 const headerHeight = '40px';

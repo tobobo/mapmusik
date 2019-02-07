@@ -1,13 +1,13 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import path from 'path';
-import { cwd } from 'process';
+import process from 'process';
 import fp from 'lodash/fp';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import axios from 'axios';
 import setupGraphql from './lib/setupGraphql.mjs';
-import config from '../config/server.js';
+import config from '../config/server.mjs';
 import webpackConfig from '../webpack.config.js';
 
 const app = express();
@@ -38,7 +38,7 @@ const start = ({ mysqlAdapter }) => {
       .catch(next);
   });
 
-  app.get('*', (req, res) => res.sendFile(path.join(cwd(), './client/index.html')));
+  app.get('*', (req, res) => res.sendFile(path.join(process.cwd(), './client/index.html')));
 
   app.listen(config.port, () => {
     console.log(`Listening on port ${config.port}...`);

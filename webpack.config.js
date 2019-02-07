@@ -1,7 +1,10 @@
+const webpack = require('webpack');
+
 module.exports = {
   mode: 'development',
   entry: ['babel-polyfill', './client/index.mjs'],
   devtool: 'inline-source-map',
+  plugins: [new webpack.EnvironmentPlugin(['MAPMUSIK_GOOGLE_MAPS_API_KEY', 'MAPMUSIK_ASSET_PREFIX'])],
   module: {
     rules: [
       {
