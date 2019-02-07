@@ -8,26 +8,28 @@ export default app => {
     jsonHandler(async req => {
       const { id: uploadId, url: escapedUrl, user_id: userId } = req.body;
       const mysqlAdapter = app.get('mysqlAdapter');
+
       if (userId !== '0') return { status: 200 };
+
       const url = unescape(escapedUrl);
       const upload = {
         id: uploadId,
         url,
       };
-      console.log('upload', upload);
+
       await mysqlAdapter.createUpload(upload);
+
       const videoId = uuidv4();
-      const coconutArgs = [videoId, url];
-      console.log('coconutArgs', coconutArgs);
-      const jobId = await transcodeVideo(...coconutArgs);
+      const jobId = await transcodeVideo(videoId, url);
       const video = {
         id: videoId,
         encoder_job_id: jobId,
         upload_id: uploadId,
       };
-      console.log('video', video);
+
       await mysqlAdapter.createVideo(video);
-      return { status: 200, body: { videoId } };
+
+      return { status: 200 };
     })
   );
 };

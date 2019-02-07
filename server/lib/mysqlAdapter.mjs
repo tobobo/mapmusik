@@ -11,6 +11,13 @@ export default connection => {
       'select * from videos where video_url is not null order by created_at desc limit ?',
       [limit]
     );
+  const getVideoByEncoderJobId = async encoderJobId => {
+    const [video] = await connection.query(
+      'select * from videos where encoder_job_id = ? limit 1',
+      [encoderJobId]
+    );
+    return video;
+  };
   const createVideo = video =>
     connection.query(`insert into videos SET ?`, { created_at: new Date(), ...video });
   const updateVideo = ({ id, ...video }) => {
@@ -23,5 +30,13 @@ export default connection => {
 
   process.on('exit', () => connection.end());
 
-  return { createUpload, getUploadByUrl, getUploads, getVideos, createVideo, updateVideo };
+  return {
+    createUpload,
+    getUploadByUrl,
+    getUploads,
+    getVideoByEncoderJobId,
+    getVideos,
+    createVideo,
+    updateVideo,
+  };
 };
