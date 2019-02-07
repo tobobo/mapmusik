@@ -1,13 +1,16 @@
 import fs from 'fs';
 import parse from 'csv-parse/lib/sync';
 import uuidv4 from 'uuid/v4';
+import axios from 'axios';
 import { transcodeVideo } from './server/lib/coconutAdapter.mjs';
 import config from './config/server.js';
 
 const run = async () => {
-  const filename = process.argv[2];
+  const url = process.argv[2];
 
-  const input = fs.readFileSync(filename);
+  const { data: input } = await axios.get(url);
+
+  console.log('input', input);
 
   const records = parse(input);
 
