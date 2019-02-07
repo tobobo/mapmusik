@@ -1,6 +1,7 @@
 import uuidv4 from 'uuid/v4';
 import { transcodeVideo } from '../lib/coconutAdapter.mjs';
 import jsonHandler from '../lib/jsonHandler.mjs';
+import config from '../../config/server.js';
 
 export default app => {
   app.post(
@@ -20,7 +21,10 @@ export default app => {
       await mysqlAdapter.createUpload(upload);
 
       const videoId = uuidv4();
-      const jobId = await transcodeVideo(videoId, url);
+      const transcodeOptions = config.webhookHost
+        ? { webhook: `${config.webhookHost}/webhooks/coconut` }
+        : {};
+      const jobId = await transcodeVideo(videoId, url, transcodeOptions);
       const video = {
         id: videoId,
         encoder_job_id: jobId,

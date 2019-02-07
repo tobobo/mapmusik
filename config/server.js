@@ -14,5 +14,6 @@ module.exports = {
   coconut: {
     apiKey: process.env.MAPMUSIK_COCONUT_API_KEY,
   },
+  webhookHost: process.env.MAPMUSIK_WEBHOOK_HOST,
   port: process.env.PORT || 8000,
 };
