@@ -3,7 +3,7 @@ const s3 = require('s3');
 const mysql = require('promise-mysql');
 const fp = require('lodash/fp');
 const createMysqlAdapter = require('./server/lib/mysqlAdapter');
-const config = require('./config/server.mjs');
+const config = require('./config/server.js');
 const coconutAdapter = require('./server/lib/coconutAdapter');
 
 const s3Client = s3.createClient({

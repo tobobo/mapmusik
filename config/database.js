@@ -1,4 +1,4 @@
-const serverConfig = require('./server.mjs');
+const serverConfig = require('./server.js');
 
 module.exports = {
   defaultEnv: 'development',

@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 import path from 'path';
 import process from 'process';
 import setupGraphql from './lib/setupGraphql.mjs';
-import config from '../config/server.mjs';
+import config from '../config/server.js';
 
 const app = express();
 

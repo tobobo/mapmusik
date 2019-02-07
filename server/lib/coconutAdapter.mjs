@@ -1,5 +1,5 @@
 import coconutApi from 'coconutjs';
-import config from '../../config/server.mjs';
+import config from '../../config/server.js';
 
 const s3BaseUrl = `s3://${config.aws.accessKeyId}:${config.aws.secretAccessKey}@${
   config.aws.bucketName

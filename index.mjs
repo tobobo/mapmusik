@@ -2,7 +2,7 @@ import mysql from 'promise-mysql';
 import createMysqlAdapter from './server/lib/mysqlAdapter.mjs';
 import startDevServer from './server/startDevServer.mjs';
 import startProdServer from './server/startProdServer.mjs';
-import config from './config/server.mjs';
+import config from './config/server.js';
 
 const startServer = process.env.NODE_ENV === 'production' ? startProdServer : startDevServer;
 

@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   googleMaps: {
     apiKey: process.env.MAPMUSIK_GOOGLE_MAPS_API_KEY,
   },

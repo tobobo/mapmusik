@@ -2,7 +2,7 @@ import mysql from 'promise-mysql';
 import fp from 'lodash/fp';
 import createMysqlAdapter from './server/lib/mysqlAdapter.mjs';
 import { transcodeVideo } from './server/lib/coconutAdapter.mjs';
-import config from './config/server.mjs';
+import config from './config/server.js';
 
 const s3BaseUrl = `s3://${config.aws.accessKeyId}:${config.aws.secretAccessKey}@${
   config.aws.bucketName

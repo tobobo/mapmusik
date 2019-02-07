@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   mysql: {
     host: process.env.MAPMUSIK_MYSQL_HOST,
     port: process.env.MAPMUSIK_MYSQL_PORT,
