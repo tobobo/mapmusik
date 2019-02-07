@@ -14,8 +14,7 @@ const run = async () => {
   console.log(records);
 
   await Promise.all(
-    records.map(([uploadId, createdAt, badUrl]) => {
-      const url = badUrl.replace('uploads2', 'uploads/2');
+    records.map(([uploadId, createdAt, url]) => {
       const upload = {
         id: uploadId,
         url,
