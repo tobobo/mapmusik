@@ -158,7 +158,7 @@ const VideoManager = ({ loading, data }) => {
                 map(video => (
                   <Button
                     css={{
-                      height: 200,
+                      height: 100,
                       width: '100%',
                       backgroundColor: 'transparent',
                       color: styles.textColor,
@@ -168,20 +168,25 @@ const VideoManager = ({ loading, data }) => {
                       borderBottom: `1px solid ${styles.borderColor}`,
                       'media screen and (min-width: 480px)': {
                         fontSize: '24px',
-                        height: 100,
-                      }
+                      },
                     }}
                     onClick={() => {
                       setVideoAtIndex(selectingVideoIndex, video);
                       hideSelector();
                     }}
                   >
-                    <div css={{ float: 'left', lineHeight: '200px' }}>
+                    <div css={{ float: 'left', lineHeight: '100px' }}>
                       {`${format('MMMM do, yyyy, h:mm a')(new Date(video.createdAt))}`}
                     </div>
-                    <img
-                      css={{ height: '100%', float: 'right' }}
-                      src={`${config.assetPrefix}${video.thumbnailUrl}`}
+                    <div
+                      css={{
+                        height: 100,
+                        width: 100,
+                        float: 'right',
+                        backgroundImage: `url(${config.assetPrefix}${video.thumbnailUrl})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                      }}
                     />
                   </Button>
                 ))(data.videos)}

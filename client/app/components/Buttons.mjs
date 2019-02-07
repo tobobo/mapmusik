@@ -39,7 +39,18 @@ const imageDataLoader = createResource(
 );
 
 const ImagePreview = ({ video: { thumbnailUrl } }) => (
-  <img css={{ width: '100%' }} src={`${config.assetPrefix}${thumbnailUrl}`} />
+  <div
+    css={{
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      backgroundImage: `url(${config.assetPrefix}${thumbnailUrl})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+    }}
+  />
 );
 
 ImagePreview.propTypes = {
@@ -225,9 +236,7 @@ const VideoButton = ({ video, isActivatedByKeyboard, isEditingVideos, showSelect
         reset();
       }}
     >
-      <div css={{ position: 'absolute', top: 0, left: 0 }}>
-        <ImagePreview video={video} />
-      </div>
+      <ImagePreview video={video} />
       <video
         autoPlay={false}
         controls={false}
@@ -236,7 +245,14 @@ const VideoButton = ({ video, isActivatedByKeyboard, isEditingVideos, showSelect
         playsInline
         ref={videoRef}
         src={videoObjectUrl}
-        css={{ position: 'absolute', width: '100%', top: 0, left: 0 }}
+        css={{
+          position: 'absolute',
+          width: '100%',
+          height: '100%',
+          top: 0,
+          left: 0,
+          objectFit: 'cover',
+        }}
         hidden={!touching}
       />
       {isEditingVideos && <VideoOverlayText>change video</VideoOverlayText>}
