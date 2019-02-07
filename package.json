@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon --experimental-modules --inspect index.mjs",
     "build": "webpack --config=webpack.config.prod.js",
+    "heroku-postbuild": "npm run build",
     "production": "node --experimental-modules index.mjs"
   },
   "author": "",
