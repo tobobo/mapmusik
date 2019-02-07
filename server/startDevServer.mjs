@@ -6,6 +6,7 @@ import fp from 'lodash/fp';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import axios from 'axios';
+import compression from 'compression';
 import setupGraphql from './lib/setupGraphql.mjs';
 import config from '../config/server.js';
 import webpackConfig from '../webpack.config.js';
@@ -15,6 +16,7 @@ const app = express();
 
 const start = ({ mysqlAdapter }) => {
   app.use(bodyParser.json());
+  app.use(compression());
   setupGraphql(app);
   app.set('mysqlAdapter', mysqlAdapter);
 

@@ -25,6 +25,7 @@
     "body-parser": "^1.18.3",
     "canvas-video": "^1.0.4",
     "coconutjs": "^2.2.0",
+    "compression": "^1.7.3",
     "date-fns": "^2.0.0-alpha.27",
     "db-migrate": "^0.11.4",
     "db-migrate-mysql": "^1.1.10",
