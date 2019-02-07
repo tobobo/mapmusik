@@ -14,5 +14,5 @@ export default {
   coconut: {
     apiKey: process.env.MAPMUSIK_COCONUT_API_KEY,
   },
-  port: process.env.MAPMUSIK_PORT,
+  port: process.env.PORT || 8000,
 };
