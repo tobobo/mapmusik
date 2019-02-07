@@ -2,26 +2,29 @@ import fs from 'fs';
 import parse from 'csv-parse/lib/sync';
 import uuidv4 from 'uuid/v4';
 import axios from 'axios';
+import mysql from 'promise-mysql';
 import { transcodeVideo } from './server/lib/coconutAdapter.mjs';
 import config from './config/server.js';
+import createMysqlAdapter from './server/lib/mysqlAdapter.mjs';
 
 const run = async () => {
-  const url = process.argv[2];
+  const connection = await mysql.createPool({ ...config.mysql, connectionLimit: 10 });
+  const mysqlAdapter = createMysqlAdapter(connection);
 
-  const { data: input } = await axios.get(url);
+  const fileUrl = process.argv[2];
 
-  console.log('input', input);
+  const { data: input } = await axios.get(fileUrl);
 
   const records = parse(input);
 
-  console.log(records);
-
   await Promise.all(
-    records.map(([uploadId, createdAt, url]) => {
+    records.map(async ([uploadId, createdAt, url]) => {
       const upload = {
         id: uploadId,
         url,
       };
+
+      await mysqlAdapter.createUpload(upload);
 
       const videoId = uuidv4();
 
@@ -29,14 +32,18 @@ const run = async () => {
         ? { webhook: `${config.webhookHost}/webhooks/coconut` }
         : {};
 
+      const encoderJobId = await transcodeVideo(videoId, url, transcodeOptions);
+
       const video = {
         id: videoId,
-        encoder_job_id: null,
+        encoder_job_id: encoderJobId,
         upload_id: uploadId,
         created_at: new Date(createdAt),
       };
 
-      console.log(upload, video, transcodeOptions);
+      await mysqlAdapter.createVideo(video);
+
+      console.log('created video', videoId, 'with encoder job id', encoderJobId);
     })
   );
 };
