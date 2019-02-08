@@ -168,20 +168,22 @@ const usePressedKeys = () => {
 
 // eslint-disable-next-line react/display-name
 const VideoOverlayText = memo(({ children, ...props }) => (
-  <div css={{ position: 'relative', height: '100%', width: '100%' }} {...props}>
-    <div
-      css={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        padding: '5px 10px',
-        backgroundColor: 'rgba(0, 0, 0, 0.25)',
-        borderRadius: '5px',
-        color: styles.textColor,
-      }}
-    >
-      {children}
+  <div css={{ position: 'absolute', height: '100%', width: '100%', top: 0, left: 0 }}>
+    <div css={{ position: 'relative', height: '100%', width: '100%' }} {...props}>
+      <div
+        css={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          padding: '5px 10px',
+          backgroundColor: 'rgba(0, 0, 0, 0.25)',
+          borderRadius: '5px',
+          color: styles.textColor,
+        }}
+      >
+        {children}
+      </div>
     </div>
   </div>
 ));
@@ -268,15 +270,16 @@ const VideoButton = memo(({ video, isActivatedByKeyboard, isEditingVideos, showS
           MsUserSelect: 'none',
           UserSelect: 'none',
         }}
-        onMouseDown={() => {
+        onClick={() => {
           if (isEditingVideos) {
             showSelector();
-            return;
           }
+        }}
+        onMouseDown={() => {
+          if (isEditingVideos) return;
           setTouching(true);
         }}
         onTouchStart={() => {
-          if (isEditingVideos) return;
           setTouching(true);
         }}
         onMouseUp={() => {
