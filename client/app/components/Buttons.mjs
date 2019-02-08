@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, Suspense, memo } from 'react';
+import React, { useRef, useState, useEffect, useLayoutEffect, Suspense, memo } from 'react';
 import { createResource, createCache } from 'simple-cache-provider';
 import PropTypes from 'prop-types';
 import filter from 'lodash/fp/filter';
@@ -187,10 +187,12 @@ const VideoButton = memo(
     const sourceRef = useRef(null);
     const audioBufferRef = useRef(null);
     const isPlayingRef = useRef(false);
+    const isTouchingRef = useRef(false);
+    const suppressMouseEventsRef = useRef(false);
 
     const enabled = (touching || isActivatedByKeyboard) && !isEditingVideos;
 
-    useEffect(
+    useLayoutEffect(
       () => {
         if (enabled) {
           if (isPlayingRef.current) return;
@@ -205,7 +207,7 @@ const VideoButton = memo(
           isPlayingRef.current = false;
         }
       },
-      [enabled, isEditingVideos]
+      [enabled]
     );
 
     const [videoObjectUrl, , bufferFromLoader] = combinedLoader(
@@ -259,26 +261,33 @@ const VideoButton = memo(
             MsUserSelect: 'none',
             UserSelect: 'none',
           }}
+          onTouchStart={() => {
+            suppressMouseEventsRef.current = false;
+            setTouching(true);
+          }}
+          onTouchCancel={() => {
+            suppressMouseEventsRef.current = true;
+            setTouching(false);
+          }}
+          onTouchEnd={() => {
+            suppressMouseEventsRef.current = true;
+            setTouching(false);
+          }}
+          onMouseDown={() => {
+            if (suppressMouseEventsRef.current) return;
+            setTouching(true);
+          }}
+          onMouseUp={() => {
+            if (suppressMouseEventsRef.current) {
+              suppressMouseEventsRef.current = false;
+              return;
+            }
+            setTouching(false);
+          }}
           onClick={() => {
             if (isEditingVideos) {
               showSelectorForIndex(index);
             }
-          }}
-          onMouseDown={() => {
-            if (isEditingVideos) return;
-            setTouching(true);
-          }}
-          onTouchStart={() => {
-            if (isEditingVideos) return;
-            setTouching(true);
-          }}
-          onMouseUp={() => {
-            if (isEditingVideos) return;
-            setTouching(false);
-          }}
-          onTouchEnd={() => {
-            if (isEditingVideos) return;
-            setTouching(false);
           }}
           onContextMenu={e => {
             e.preventDefault();
