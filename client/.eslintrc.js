@@ -1,5 +1,5 @@
 module.exports = {
-  plugins: ['react'],
+  plugins: ['react', 'react-hooks'],
   extends: ['plugin:react/recommended'],
   env: {
     browser: 'true',
@@ -12,11 +12,14 @@ module.exports = {
   settings: {
     'import/resolver': {
       node: {
-        extensions: ['.js', '.jsx'],
+        extensions: ['.mjs'],
       },
     },
     react: {
       version: 'detect',
     },
+  },
+  rules: {
+    'react-hooks/rules-of-hooks': 'error',
   },
 };

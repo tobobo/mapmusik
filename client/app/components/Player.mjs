@@ -22,9 +22,9 @@ const useOrientation = () => {
   return orientation;
 };
 
+/* eslint-disable-next-line react/display-name */
 const Player = memo(({ videos, isEditingVideos, showSelectorForIndex }) => {
   const orientation = useOrientation();
-  console.log('rendering player');
   return (
     <div
       css={{

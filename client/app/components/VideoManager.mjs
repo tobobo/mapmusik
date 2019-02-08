@@ -157,6 +157,7 @@ const VideoManager = ({ loading, data }) => {
               {data.videos &&
                 map(video => (
                   <Button
+                    key={video.id}
                     css={{
                       height: 100,
                       width: '100%',
@@ -201,7 +202,7 @@ const VideoManager = ({ loading, data }) => {
 VideoManager.propTypes = {
   loading: PropTypes.bool.isRequired,
   data: PropTypes.shape({
-    video: PropTypes.arrayOf(PropTypes.object).isRequired,
+    video: PropTypes.arrayOf(PropTypes.object),
   }),
 };
 
