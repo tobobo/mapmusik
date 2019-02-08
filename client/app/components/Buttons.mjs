@@ -280,6 +280,7 @@ const VideoButton = memo(({ video, isActivatedByKeyboard, isEditingVideos, showS
           setTouching(true);
         }}
         onTouchStart={() => {
+          if (isEditingVideos) return;
           setTouching(true);
         }}
         onMouseUp={() => {
