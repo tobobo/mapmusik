@@ -10,6 +10,7 @@ import range from 'lodash/fp/range';
 import includes from 'lodash/fp/includes';
 import equals from 'lodash/fp/equals';
 import negate from 'lodash/fp/negate';
+import find from 'lodash/fp/find';
 import GridLoader from 'react-spinners/GridLoader';
 import config from '../../../config/client.js';
 import styles from '../styles.mjs';
@@ -38,7 +39,7 @@ const imageDataLoader = createResource(
     })
 );
 
-const ImagePreview = ({ video: { thumbnailUrl } }) => (
+const ImagePreview = memo(({ video: { thumbnailUrl } }) => (
   <div
     css={{
       position: 'absolute',
@@ -51,7 +52,7 @@ const ImagePreview = ({ video: { thumbnailUrl } }) => (
       backgroundPosition: 'center',
     }}
   />
-);
+));
 
 ImagePreview.propTypes = {
   video: PropTypes.object.isRequired,
@@ -113,9 +114,16 @@ const playBuffer = buffer => {
 
 const usePressedKeys = () => {
   const [pressedKeys, setPressedKeys] = useState([]);
-  const addPressedKey = key => setPressedKeys(prevPressedKeys => union(prevPressedKeys)([key]));
-  const removePressedKey = key =>
+  const pressedKeysObj = useRef({});
+  const addPressedKey = key => {
+    if (pressedKeysObj.current[key]) return;
+    pressedKeysObj.current[key] = true;
+    setPressedKeys(prevPressedKeys => union(prevPressedKeys)([key]));
+  };
+  const removePressedKey = key => {
+    pressedKeysObj.current[key] = false;
     setPressedKeys(prevPressedKeys => filter(negate(equals(key)))(prevPressedKeys));
+  };
   useEffect(() => {
     const onKeyDown = e => {
       const key = String.fromCharCode(e.keyCode || e.which);
@@ -164,7 +172,7 @@ VideoOverlayText.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-const VideoButton = ({ video, isActivatedByKeyboard, isEditingVideos, showSelector }) => {
+const VideoButton = memo(({ video, isActivatedByKeyboard, isEditingVideos, showSelector }) => {
   const [touching, setTouching] = useState(false);
   const videoRef = useRef(null);
   const sourceRef = useRef(null);
@@ -210,31 +218,6 @@ const VideoButton = ({ video, isActivatedByKeyboard, isEditingVideos, showSelect
         opacity: touching || isEditingVideos ? '1' : '0.2',
         cursor: 'pointer',
       }}
-      onMouseDown={() => {
-        if (isEditingVideos) {
-          showSelector();
-          return;
-        }
-        if (touching) return;
-        setTouching(true);
-        play();
-      }}
-      onTouchStart={() => {
-        if (isEditingVideos) return;
-        setTouching(true);
-        play();
-      }}
-      onMouseUp={() => {
-        if (isEditingVideos) return;
-        if (!touching) return;
-        setTouching(false);
-        reset();
-      }}
-      onTouchEnd={() => {
-        if (isEditingVideos) return;
-        setTouching(false);
-        reset();
-      }}
     >
       <ImagePreview video={video} />
       <video
@@ -255,10 +238,38 @@ const VideoButton = ({ video, isActivatedByKeyboard, isEditingVideos, showSelect
         }}
         hidden={!touching}
       />
+      <div
+        css={{ position: 'absolute', height: '100%', width: '100%' }}
+        onMouseDown={() => {
+          if (isEditingVideos) {
+            showSelector();
+            return;
+          }
+          if (touching) return;
+          setTouching(true);
+          play();
+        }}
+        onTouchStart={() => {
+          if (isEditingVideos) return;
+          setTouching(true);
+          play();
+        }}
+        onMouseUp={() => {
+          if (isEditingVideos) return;
+          if (!touching) return;
+          setTouching(false);
+          reset();
+        }}
+        onTouchEnd={() => {
+          if (isEditingVideos) return;
+          setTouching(false);
+          reset();
+        }}
+      />
       {isEditingVideos && <VideoOverlayText>change video</VideoOverlayText>}
     </div>
   );
-};
+});
 
 VideoButton.propTypes = {
   video: PropTypes.shape({
@@ -269,7 +280,7 @@ VideoButton.propTypes = {
   showSelector: PropTypes.func.isRequired,
 };
 
-const NoVideo = ({ isEditingVideos, showSelector }) =>
+const NoVideo = memo(({ isEditingVideos, showSelector }) =>
   isEditingVideos ? (
     <div
       css={{
@@ -284,7 +295,8 @@ const NoVideo = ({ isEditingVideos, showSelector }) =>
     >
       <VideoOverlayText>add video</VideoOverlayText>
     </div>
-  ) : null;
+  ) : null
+);
 
 NoVideo.propTypes = {
   isEditingVideos: PropTypes.bool.isRequired,
@@ -352,8 +364,9 @@ VideoSuspender.propTypes = {
 
 const videoKeys = ['q', 'w', 'e', 'r', 'a', 's', 'd', 'f', 'z', 'x', 'c', 'v'];
 
-const Buttons = ({ videos, isEditingVideos, showSelectorForIndex }) => {
+const Buttons = memo(({ videos, isEditingVideos, showSelectorForIndex }) => {
   const isKeyPressed = usePressedKeys();
+  console.log('rendering buttons');
   return map(index => (
     <VideoSuspender
       key={index}
@@ -365,7 +378,7 @@ const Buttons = ({ videos, isEditingVideos, showSelectorForIndex }) => {
       showSelector={() => showSelectorForIndex(index)}
     />
   ))(range(0, 12));
-};
+});
 
 Buttons.propTYpes = {
   videos: PropTypes.arrayOf(PropTypes.object).isRequired,

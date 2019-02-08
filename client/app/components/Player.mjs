@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import debounce from 'lodash/debounce';
 import Buttons from './Buttons.mjs';
@@ -22,8 +22,9 @@ const useOrientation = () => {
   return orientation;
 };
 
-const Player = ({ videos, isEditingVideos, showSelectorForIndex }) => {
+const Player = memo(({ videos, isEditingVideos, showSelectorForIndex }) => {
   const orientation = useOrientation();
+  console.log('rendering player');
   return (
     <div
       css={{
@@ -43,7 +44,7 @@ const Player = ({ videos, isEditingVideos, showSelectorForIndex }) => {
       />
     </div>
   );
-};
+});
 
 Player.propTypes = {
   videos: PropTypes.arrayOf(PropTypes.object).isRequired,
