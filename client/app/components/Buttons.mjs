@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, Suspense, memo } from 'react';
+import React, { useRef, useState, useEffect, useLayoutEffect, Suspense, memo } from 'react';
 import { createResource, createCache } from 'simple-cache-provider';
 import PropTypes from 'prop-types';
 import filter from 'lodash/fp/filter';
@@ -39,6 +39,7 @@ const imageDataLoader = createResource(
     })
 );
 
+// eslint-disable-next-line react/display-name
 const ImagePreview = memo(({ video: { thumbnailUrl } }) => (
   <div
     css={{
@@ -114,16 +115,32 @@ const playBuffer = buffer => {
 
 const usePressedKeys = () => {
   const [pressedKeys, setPressedKeys] = useState([]);
-  const pressedKeysObj = useRef({});
   const addPressedKey = key => {
-    if (pressedKeysObj.current[key]) return;
-    pressedKeysObj.current[key] = true;
-    setPressedKeys(prevPressedKeys => union(prevPressedKeys)([key]));
+    setPressedKeys(prevPressedKeys => {
+      if (find(equals(key))(prevPressedKeys)) {
+        console.log('has key, not adding', key);
+        return prevPressedKeys;
+      }
+      console.log('does not have key, adding', key);
+      return union(prevPressedKeys)([key]);
+    });
   };
   const removePressedKey = key => {
-    pressedKeysObj.current[key] = false;
-    setPressedKeys(prevPressedKeys => filter(negate(equals(key)))(prevPressedKeys));
+    setPressedKeys(prevPressedKeys => {
+      if (find(equals(key))(prevPressedKeys)) {
+        console.log('has key, removing', key);
+        return filter(negate(equals(key)))(prevPressedKeys);
+      }
+      console.log('does not have key, not removing', key);
+      return prevPressedKeys;
+    });
   };
+  useEffect(
+    () => {
+      console.log('pk', pressedKeys);
+    },
+    [pressedKeys]
+  );
   useEffect(() => {
     const onKeyDown = e => {
       const key = String.fromCharCode(e.keyCode || e.which);
@@ -149,7 +166,8 @@ const usePressedKeys = () => {
   return key => includes(key.toLowerCase())(pressedKeys);
 };
 
-const VideoOverlayText = ({ children, ...props }) => (
+// eslint-disable-next-line react/display-name
+const VideoOverlayText = memo(({ children, ...props }) => (
   <div css={{ position: 'relative', height: '100%', width: '100%' }} {...props}>
     <div
       css={{
@@ -166,12 +184,13 @@ const VideoOverlayText = ({ children, ...props }) => (
       {children}
     </div>
   </div>
-);
+));
 
 VideoOverlayText.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
+// eslint-disable-next-line react/display-name
 const VideoButton = memo(({ video, isActivatedByKeyboard, isEditingVideos, showSelector }) => {
   const [touching, setTouching] = useState(false);
   const videoRef = useRef(null);
@@ -195,18 +214,16 @@ const VideoButton = memo(({ video, isActivatedByKeyboard, isEditingVideos, showS
     sourceRef.current.stop();
     isPlayingRef.current = false;
   };
-  useEffect(
+  const enabled = touching || isActivatedByKeyboard;
+  useLayoutEffect(
     () => {
-      if (touching === isActivatedByKeyboard || isEditingVideos) return;
-      if (isActivatedByKeyboard) {
-        setTouching(true);
+      if (enabled) {
         play();
       } else {
-        setTouching(false);
         reset();
       }
     },
-    [isActivatedByKeyboard]
+    [enabled]
   );
   return (
     <div
@@ -215,7 +232,7 @@ const VideoButton = memo(({ video, isActivatedByKeyboard, isEditingVideos, showS
         position: 'relative',
         width: '100%',
         height: '100%',
-        opacity: touching || isEditingVideos ? '1' : '0.2',
+        opacity: enabled || isEditingVideos ? '1' : '0.2',
         cursor: 'pointer',
       }}
     >
@@ -236,37 +253,45 @@ const VideoButton = memo(({ video, isActivatedByKeyboard, isEditingVideos, showS
           left: 0,
           objectFit: 'cover',
         }}
-        hidden={!touching}
+        hidden={!enabled}
       />
+      {isEditingVideos && <VideoOverlayText>change video</VideoOverlayText>}
       <div
-        css={{ position: 'absolute', height: '100%', width: '100%' }}
+        css={{
+          position: 'absolute',
+          height: '100%',
+          width: '100%',
+          WebkitTouchCallout: 'none',
+          WebkitUserSelect: 'none',
+          KhtmlUserSelect: 'none',
+          MozUseSelect: 'none',
+          MsUserSelect: 'none',
+          UserSelect: 'none',
+        }}
         onMouseDown={() => {
           if (isEditingVideos) {
             showSelector();
             return;
           }
-          if (touching) return;
           setTouching(true);
-          play();
         }}
         onTouchStart={() => {
           if (isEditingVideos) return;
           setTouching(true);
-          play();
         }}
         onMouseUp={() => {
           if (isEditingVideos) return;
-          if (!touching) return;
           setTouching(false);
-          reset();
         }}
         onTouchEnd={() => {
           if (isEditingVideos) return;
           setTouching(false);
-          reset();
+        }}
+        onContextMenu={e => {
+          e.preventDefault();
+          return false;
         }}
       />
-      {isEditingVideos && <VideoOverlayText>change video</VideoOverlayText>}
     </div>
   );
 });
@@ -280,6 +305,7 @@ VideoButton.propTypes = {
   showSelector: PropTypes.func.isRequired,
 };
 
+// eslint-disable-next-line react/display-name
 const NoVideo = memo(({ isEditingVideos, showSelector }) =>
   isEditingVideos ? (
     <div
@@ -313,12 +339,6 @@ const VideoSuspender = memo(({ video, isActivatedByKeyboard, isEditingVideos, sh
       height: '100%',
       overflow: 'hidden',
       boxShadow: '0 0 1px black',
-      WebkitTouchCallout: 'none',
-      WebkitUserSelect: 'none',
-      KhtmlUserSelect: 'none',
-      MozUseSelect: 'none',
-      MsUserSelect: 'none',
-      UserSelect: 'none',
     }}
   >
     <Suspense
@@ -364,9 +384,9 @@ VideoSuspender.propTypes = {
 
 const videoKeys = ['q', 'w', 'e', 'r', 'a', 's', 'd', 'f', 'z', 'x', 'c', 'v'];
 
+// eslint-disable-next-line react/display-name
 const Buttons = memo(({ videos, isEditingVideos, showSelectorForIndex }) => {
   const isKeyPressed = usePressedKeys();
-  console.log('rendering buttons');
   return map(index => (
     <VideoSuspender
       key={index}
