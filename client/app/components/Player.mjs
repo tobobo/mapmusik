@@ -23,7 +23,7 @@ const useOrientation = () => {
 };
 
 /* eslint-disable-next-line react/display-name */
-const Player = memo(({ videos, isEditingVideos, showSelectorForIndex }) => {
+const Player = memo(({ videos, isSelectingVideos, isSwappingVideo, swapVideoAtIndex }) => {
   const orientation = useOrientation();
   return (
     <div
@@ -39,8 +39,9 @@ const Player = memo(({ videos, isEditingVideos, showSelectorForIndex }) => {
     >
       <Buttons
         videos={videos}
-        isEditingVideos={isEditingVideos}
-        showSelectorForIndex={showSelectorForIndex}
+        isSelectingVideos={isSelectingVideos}
+        isSwappingVideo={isSwappingVideo}
+        swapVideoAtIndex={swapVideoAtIndex}
       />
     </div>
   );
@@ -48,8 +49,9 @@ const Player = memo(({ videos, isEditingVideos, showSelectorForIndex }) => {
 
 Player.propTypes = {
   videos: PropTypes.arrayOf(PropTypes.object).isRequired,
-  isEditingVideos: PropTypes.bool.isRequired,
-  showSelectorForIndex: PropTypes.func.isRequired,
+  isSelectingVideos: PropTypes.bool.isRequired,
+  isSwappingVideo: PropTypes.bool.isRequired,
+  swapVideoAtIndex: PropTypes.func.isRequired,
 };
 
 export default Player;

@@ -42,26 +42,25 @@ const Title = props => (
 
 const VideoManager = ({ loading, data }) => {
   const [videos, setVideos] = useState([]);
+  const [swappingVideo, setSwappingVideo] = useState(null);
   useEffect(
     () => {
-      if (isEmpty(videos) && data && data.featuredVideos) setVideos(map(i => data.featuredVideos[i])(range(0, 12)));
+      if (isEmpty(videos) && data && data.featuredVideos)
+        setVideos(map(i => data.featuredVideos[i])(range(0, 12)));
     },
     [data]
   );
 
-  const setVideoAtIndex = (index, video) => {
+  const swapVideo = (index, video) => {
     setVideos(prevVideos => [...prevVideos.slice(0, index), video, ...prevVideos.slice(index + 1)]);
+    setSwappingVideo(null);
   };
 
   // eslint-disable-next-line no-unused-vars
   const { enabled: isShowingPlayer, enable: hidePlayer, disable: showPlayer } = useToggle(true);
-  const { enabled: isEditingVideos, enable: editVideos, disable: finishEditingVideos } = useToggle(
+  const { enabled: isSelectingVideos, enable: showSelector, disable: hideSelector } = useToggle(
     false
   );
-
-  const [selectingVideoIndex, showSelectorForIndex] = useState(null);
-
-  const hideSelector = () => showSelectorForIndex(null);
 
   return (
     <div
@@ -85,10 +84,16 @@ const VideoManager = ({ loading, data }) => {
         {/* <Button onClick={showPlayer}>map</Button>
     <Button onClick={hidePlayer}>Sampler</Button> */}
         <Title>MapMusik</Title>
-        {isEditingVideos ? (
-          <HeaderButton onClick={finishEditingVideos}>ready to play!</HeaderButton>
+        {swappingVideo ? (
+          <HeaderButton
+            onClick={() => {
+              setSwappingVideo(null);
+            }}
+          >
+            cancel
+          </HeaderButton>
         ) : (
-          <HeaderButton onClick={editVideos}>explore videos</HeaderButton>
+          <HeaderButton onClick={showSelector}>explore videos</HeaderButton>
         )}
       </div>
       <div>
@@ -114,11 +119,12 @@ const VideoManager = ({ loading, data }) => {
           {isShowingPlayer && !loading && (
             <Player
               videos={videos}
-              isEditingVideos={isEditingVideos}
-              showSelectorForIndex={showSelectorForIndex}
+              isSelectingVideos={isSelectingVideos}
+              isSwappingVideo={!!swappingVideo}
+              swapVideoAtIndex={index => swapVideo(index, swappingVideo)}
             />
           )}
-          {selectingVideoIndex !== null && (
+          {isSelectingVideos && (
             <Modal
               isOpen={true}
               onRequestClose={hideSelector}
@@ -172,7 +178,7 @@ const VideoManager = ({ loading, data }) => {
                       },
                     }}
                     onClick={() => {
-                      setVideoAtIndex(selectingVideoIndex, video);
+                      setSwappingVideo(video);
                       hideSelector();
                     }}
                   >

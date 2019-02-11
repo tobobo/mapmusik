@@ -166,6 +166,7 @@ const VideoOverlayText = memo(({ children, ...props }) => (
           backgroundColor: 'rgba(0, 0, 0, 0.25)',
           borderRadius: '5px',
           color: styles.textColor,
+          textAlign: 'center',
         }}
       >
         {children}
@@ -181,16 +182,23 @@ VideoOverlayText.propTypes = {
 };
 
 const VideoButton = memo(
-  ({ video, index, isActivatedByKeyboard, isEditingVideos, showSelectorForIndex }) => {
+  /* eslint-disable-next-line complexity */
+  ({
+    video,
+    index,
+    isActivatedByKeyboard,
+    isSelectingVideos,
+    isSwappingVideo,
+    swapVideoAtIndex,
+  }) => {
     const [touching, setTouching] = useState(false);
     const videoRef = useRef(null);
     const sourceRef = useRef(null);
     const audioBufferRef = useRef(null);
     const isPlayingRef = useRef(false);
-    const isTouchingRef = useRef(false);
     const suppressMouseEventsRef = useRef(false);
 
-    const enabled = (touching || isActivatedByKeyboard) && !isEditingVideos;
+    const enabled = (touching || isActivatedByKeyboard) && !(isSelectingVideos || isSwappingVideo);
 
     useLayoutEffect(
       () => {
@@ -225,7 +233,7 @@ const VideoButton = memo(
           position: 'relative',
           width: '100%',
           height: '100%',
-          opacity: enabled || isEditingVideos ? '1' : '0.2',
+          opacity: enabled || isSwappingVideo ? '1' : '0.2',
           cursor: 'pointer',
         }}
       >
@@ -248,7 +256,7 @@ const VideoButton = memo(
           }}
           hidden={!enabled}
         />
-        {isEditingVideos && <VideoOverlayText>change video</VideoOverlayText>}
+        {isSwappingVideo && <VideoOverlayText>replace video</VideoOverlayText>}
         <div
           css={{
             position: 'absolute',
@@ -285,8 +293,8 @@ const VideoButton = memo(
             setTouching(false);
           }}
           onClick={() => {
-            if (isEditingVideos) {
-              showSelectorForIndex(index);
+            if (isSwappingVideo) {
+              swapVideoAtIndex(index);
             }
           }}
           onContextMenu={e => {
@@ -307,12 +315,12 @@ VideoButton.propTypes = {
   }),
   index: PropTypes.number.isRequired,
   isActivatedByKeyboard: PropTypes.bool.isRequired,
-  isEditingVideos: PropTypes.bool.isRequired,
-  showSelectorForIndex: PropTypes.func.isRequired,
+  isSelectingVideos: PropTypes.bool.isRequired,
+  swapVideoAtIndex: PropTypes.func.isRequired,
 };
 
-const NoVideo = memo(({ isEditingVideos, index, showSelectorForIndex }) =>
-  isEditingVideos ? (
+const NoVideo = memo(({ isSwappingVideo, index, swapVideoAtIndex }) =>
+  isSwappingVideo ? (
     <div
       css={{
         width: '100%',
@@ -322,7 +330,7 @@ const NoVideo = memo(({ isEditingVideos, index, showSelectorForIndex }) =>
         border: '0',
         cursor: 'pointer',
       }}
-      onClick={() => showSelectorForIndex(index)}
+      onClick={() => swapVideoAtIndex(index)}
     >
       <VideoOverlayText>add video</VideoOverlayText>
     </div>
@@ -332,13 +340,20 @@ const NoVideo = memo(({ isEditingVideos, index, showSelectorForIndex }) =>
 NoVideo.displayName = 'NoVideo';
 
 NoVideo.propTypes = {
-  isEditingVideos: PropTypes.bool.isRequired,
+  isSwappingVideo: PropTypes.bool.isRequired,
   index: PropTypes.number.isRequired,
-  showSelectorForIndex: PropTypes.func.isRequired,
+  swapVideoAtIndex: PropTypes.func.isRequired,
 };
 
 const VideoSuspender = memo(
-  ({ video, index, isActivatedByKeyboard, isEditingVideos, showSelectorForIndex }) => (
+  ({
+    video,
+    index,
+    isActivatedByKeyboard,
+    isSelectingVideos,
+    isSwappingVideo,
+    swapVideoAtIndex,
+  }) => (
     <div
       css={{
         display: 'inline-block',
@@ -373,15 +388,16 @@ const VideoSuspender = memo(
           <VideoButton
             video={video}
             isActivatedByKeyboard={isActivatedByKeyboard}
-            isEditingVideos={isEditingVideos}
+            isSelectingVideos={isSelectingVideos}
+            isSwappingVideo={isSwappingVideo}
             index={index}
-            showSelectorForIndex={showSelectorForIndex}
+            swapVideoAtIndex={swapVideoAtIndex}
           />
         ) : (
           <NoVideo
-            isEditingVideos={isEditingVideos}
             index={index}
-            showSelectorForIndex={showSelectorForIndex}
+            isSwappingVideo={isSwappingVideo}
+            swapVideoAtIndex={swapVideoAtIndex}
           />
         )}
       </Suspense>
@@ -395,13 +411,14 @@ VideoSuspender.propTypes = {
   video: PropTypes.object,
   index: PropTypes.number.isRequired,
   isActivatedByKeyboard: PropTypes.bool.isRequired,
-  isEditingVideos: PropTypes.bool.isRequired,
-  showSelectorForIndex: PropTypes.func.isRequired,
+  isSelectingVideos: PropTypes.bool.isRequired,
+  isSwappingVideo: PropTypes.bool.isRequired,
+  swapVideoAtIndex: PropTypes.func.isRequired,
 };
 
 const videoKeys = ['q', 'w', 'e', 'r', 'a', 's', 'd', 'f', 'z', 'x', 'c', 'v'];
 
-const Buttons = memo(({ videos, isEditingVideos, showSelectorForIndex }) => {
+const Buttons = memo(({ videos, isSelectingVideos, isSwappingVideo, swapVideoAtIndex }) => {
   const isKeyPressed = usePressedKeys();
   return map(index => (
     <VideoSuspender
@@ -411,8 +428,9 @@ const Buttons = memo(({ videos, isEditingVideos, showSelectorForIndex }) => {
       video={videos[index]}
       // eslint-disable-next-line security/detect-object-injection
       isActivatedByKeyboard={isKeyPressed(videoKeys[index])}
-      isEditingVideos={isEditingVideos}
-      showSelectorForIndex={showSelectorForIndex}
+      isSelectingVideos={isSelectingVideos}
+      isSwappingVideo={isSwappingVideo}
+      swapVideoAtIndex={swapVideoAtIndex}
     />
   ))(range(0, 12));
 });
@@ -421,8 +439,9 @@ Buttons.displayName = 'Buttons';
 
 Buttons.propTypes = {
   videos: PropTypes.arrayOf(PropTypes.object).isRequired,
-  isEditingVideos: PropTypes.bool.isRequired,
-  showSelectorForIndex: PropTypes.func.isRequired,
+  isSelectingVideos: PropTypes.bool.isRequired,
+  isSwappingVideo: PropTypes.bool.isRequired,
+  swapVideoAtIndex: PropTypes.func.isRequired,
 };
 
 export default Buttons;
