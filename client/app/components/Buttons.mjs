@@ -316,6 +316,7 @@ VideoButton.propTypes = {
   index: PropTypes.number.isRequired,
   isActivatedByKeyboard: PropTypes.bool.isRequired,
   isSelectingVideos: PropTypes.bool.isRequired,
+  isSwappingVideo: PropTypes.bool.isRequired,
   swapVideoAtIndex: PropTypes.func.isRequired,
 };
 
