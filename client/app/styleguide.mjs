@@ -14,6 +14,7 @@ const HeaderButton = props => (
       color: styles.textColor,
       textDecoration: 'underline',
       float: 'left',
+      fontSize: 16,
     }}
     {...props}
   />

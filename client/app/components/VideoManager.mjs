@@ -44,7 +44,7 @@ const VideoManager = ({ loading, data }) => {
   const [videos, setVideos] = useState([]);
   useEffect(
     () => {
-      if (isEmpty(videos) && data && data.videos) setVideos(map(i => data.videos[i])(range(0, 12)));
+      if (isEmpty(videos) && data && data.featuredVideos) setVideos(map(i => data.featuredVideos[i])(range(0, 12)));
     },
     [data]
   );
@@ -88,7 +88,7 @@ const VideoManager = ({ loading, data }) => {
         {isEditingVideos ? (
           <HeaderButton onClick={finishEditingVideos}>ready to play!</HeaderButton>
         ) : (
-          <HeaderButton onClick={editVideos}>change videos</HeaderButton>
+          <HeaderButton onClick={editVideos}>explore videos</HeaderButton>
         )}
       </div>
       <div>
@@ -154,7 +154,7 @@ const VideoManager = ({ loading, data }) => {
                   Cancel
                 </HeaderButton>
               </div>
-              {data.videos &&
+              {data.allVideos &&
                 map(video => (
                   <Button
                     key={video.id}
@@ -190,7 +190,7 @@ const VideoManager = ({ loading, data }) => {
                       }}
                     />
                   </Button>
-                ))(data.videos)}
+                ))(data.allVideos)}
             </Modal>
           )}
         </div>

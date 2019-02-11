@@ -11,6 +11,11 @@ export default connection => {
       'select * from videos where video_url is not null order by created_at desc limit ?',
       [limit]
     );
+  const getFeaturedVideos = ({ limit = 100 } = {}) =>
+    connection.query(
+      'select videos.* from featured_videos join videos on featured_videos.video_id = videos.id where videos.video_url is not null order by featured_videos.order asc limit ?',
+      [limit]
+    );
   const getVideoByEncoderJobId = async encoderJobId => {
     const [video] = await connection.query(
       'select * from videos where encoder_job_id = ? limit 1',
@@ -36,6 +41,7 @@ export default connection => {
     getUploads,
     getVideoByEncoderJobId,
     getVideos,
+    getFeaturedVideos,
     createVideo,
     updateVideo,
   };

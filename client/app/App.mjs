@@ -17,15 +17,22 @@ const apolloClient = new ApolloClient({
 
 const videosQuery = gql`
   {
-    videos {
-      id
-      createdAt
-      videoUrl
-      thumbnailUrl
-      audioUrl
-      lat
-      lng
+    allVideos: videos {
+      ...VideoFields
     }
+    featuredVideos: videos(sortBy: FEATURED) {
+      ...VideoFields
+    }
+  }
+
+  fragment VideoFields on Video {
+    id
+    createdAt
+    videoUrl
+    thumbnailUrl
+    audioUrl
+    lat
+    lng
   }
 `;
 

@@ -4,8 +4,9 @@ import ApolloServerExpress from 'apollo-server-express';
 const { ApolloServer, gql } = ApolloServerExpress;
 
 const typeDefs = gql`
-  type Query {
-    videos: [Video!]!
+  enum VideoSortOrder {
+    NEW
+    FEATURED
   }
 
   type Video {
@@ -17,11 +18,18 @@ const typeDefs = gql`
     lat: Float
     lng: Float
   }
+
+  type Query {
+    videos(sortBy: VideoSortOrder = NEW): [Video!]!
+  }
 `;
 
 const resolvers = {
   Query: {
-    videos: (_, __, { mysqlAdapter }) => mysqlAdapter.getVideos(),
+    videos: (_, { sortBy }, { mysqlAdapter }) => {
+      if (sortBy === 'FEATURED') return mysqlAdapter.getFeaturedVideos();
+      return mysqlAdapter.getVideos();
+    },
   },
 
   Video: {
