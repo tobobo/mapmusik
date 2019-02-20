@@ -108,7 +108,7 @@ const PreviewButton = ({ video: { thumbnailUrl, previewUrl } }) => {
           lineHeight: '100px',
         }}
       >
-        ▶
+        ▶&#xfe0e;
       </div>
     </div>
   );
