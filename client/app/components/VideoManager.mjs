@@ -85,9 +85,11 @@ const PreviewButton = ({ video: { thumbnailUrl, previewUrl } }) => {
         />
       </div>
     );
+  if (!previewUrl) return <ImagePreview thumbnailUrl={thumbnailUrl} />;
+
   return (
     <div
-      css={{ width: '100%', height: '100%' }}
+      css={{ width: '100%', height: '100%', position: 'relative' }}
       onClick={e => {
         e.stopPropagation();
         e.preventDefault();
@@ -95,6 +97,19 @@ const PreviewButton = ({ video: { thumbnailUrl, previewUrl } }) => {
       }}
     >
       <ImagePreview thumbnailUrl={thumbnailUrl} />
+      <div
+        css={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          fontSize: 60,
+          lineHeight: '100px',
+        }}
+      >
+        ▶
+      </div>
     </div>
   );
 };
@@ -216,6 +231,7 @@ const VideoManager = ({ loading, data }) => {
                   top: 0,
                   height: headerHeight,
                   position: 'sticky',
+                  zIndex: 1,
                   backgroundColor: styles.backgroundColor,
                 }}
               >
