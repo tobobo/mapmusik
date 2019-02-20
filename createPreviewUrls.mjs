@@ -12,7 +12,7 @@ const main = async () => {
   const connection = await mysql.createConnection(config.mysql);
   const { updateVideo } = createMysqlAdapter(connection);
   const uploadsWithVideoIds = await connection.query(
-    'select uploads.url as uploadUrl, videos.id as videoId from uploads join videos on uploads.id = videos.upload_id'
+    'select uploads.url as uploadUrl, videos.id as videoId from uploads join videos on uploads.id = videos.upload_id limit 1'
   );
   await Promise.all(
     fp.map(async ({ uploadUrl, videoId }) => {
@@ -26,7 +26,7 @@ const main = async () => {
         },
         ...webhookOptions,
       });
-      await updateVideo({ id: videoId, encoder_job_id: jobId, preview_url: previewSuffix });
+      await updateVideo({ id: videoId, encoder_job_id: jobId });
       console.log('completed', videoId);
     })(uploadsWithVideoIds)
   );
