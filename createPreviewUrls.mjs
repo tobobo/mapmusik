@@ -12,7 +12,7 @@ const main = async () => {
   const connection = await mysql.createConnection(config.mysql);
   const { updateVideo } = createMysqlAdapter(connection);
   const uploadsWithVideoIds = await connection.query(
-    'select uploads.url as uploadUrl, videos.id as videoId from uploads join videos on uploads.id = videos.upload_id where videos.preview_url is null limit 1'
+    'select uploads.url as uploadUrl, videos.id as videoId from uploads join videos on uploads.id = videos.upload_id where videos.preview_url is null'
   );
   await Promise.all(
     fp.map(async ({ uploadUrl, videoId }) => {
