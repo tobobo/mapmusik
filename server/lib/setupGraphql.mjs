@@ -15,6 +15,7 @@ const typeDefs = gql`
     videoUrl: String!
     thumbnailUrl: String!
     audioUrl: String!
+    previewUrl: String
     lat: Float
     lng: Float
   }
@@ -36,6 +37,7 @@ const resolvers = {
     videoUrl: fp.get('video_url'),
     thumbnailUrl: fp.get('thumbnail_url'),
     audioUrl: fp.get('audio_url'),
+    previewUrl: fp.get('preview_url'),
     createdAt: video => new Date(video.created_at).toJSON(),
   },
 };

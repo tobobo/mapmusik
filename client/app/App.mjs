@@ -31,6 +31,7 @@ const videosQuery = gql`
     videoUrl
     thumbnailUrl
     audioUrl
+    previewUrl
     lat
     lng
   }

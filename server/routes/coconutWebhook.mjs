@@ -3,6 +3,7 @@ import jsonHandler from '../lib/jsonHandler.mjs';
 export default app => {
   app.post(
     '/webhooks/coconut',
+    // eslint-disable-next-line complexity
     jsonHandler(async req => {
       const { id: encoderJobId, output_urls: outputUrls, event } = req.body;
       const mysqlAdapter = app.get('mysqlAdapter');
@@ -13,12 +14,12 @@ export default app => {
 
       const {
         mp3: audioUrl,
-        'jpg:640x': [thumbnailUrl],
+        'jpg:640x': thumbnailUrlArray,
         'mp4:360p:x': videoUrl,
+        'mp4:360p': previewUrl,
       } = outputUrls;
 
-      if (!audioUrl || !thumbnailUrl || !videoUrl)
-        throw new Error(`Error getting data from coconut webhook: ${JSON.stringify(req.body)}`);
+      const [thumbnailUrl] = thumbnailUrlArray || [];
 
       const { id } = await mysqlAdapter.getVideoByEncoderJobId(encoderJobId);
 
@@ -26,9 +27,10 @@ export default app => {
 
       const video = {
         id,
-        audio_url: getPath(audioUrl),
-        thumbnail_url: getPath(thumbnailUrl),
-        video_url: getPath(videoUrl),
+        ...(audioUrl && { audio_url: getPath(audioUrl) }),
+        ...(thumbnailUrl && { thumbnail_url: getPath(thumbnailUrl) }),
+        ...(videoUrl && { video_url: getPath(videoUrl) }),
+        ...(previewUrl && { preview_url: getPath(previewUrl) })
       };
 
       await mysqlAdapter.updateVideo(video);

@@ -40,6 +40,64 @@ const Title = props => (
   />
 );
 
+const ImagePreview = ({ thumbnailUrl }) => (
+  <div
+    css={{
+      height: '100%',
+      width: '100%',
+      backgroundImage: `url(${config.assetPrefix}${thumbnailUrl})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+    }}
+  />
+);
+
+ImagePreview.propTypes = {
+  thumbnailUrl: PropTypes.string.isRequired,
+};
+
+const PreviewButton = ({ video: { thumbnailUrl, previewUrl } }) => {
+  const { enabled: isPreviewDisplayed, enable: displayPreview, disable: hidePreview } = useToggle(
+    false
+  );
+  if (previewUrl && isPreviewDisplayed)
+    return (
+      <video
+        autoPlay={true}
+        controls={true}
+        loop
+        src={`${config.assetPrefix}${previewUrl}`}
+        css={{
+          width: '100%',
+          height: '100%',
+          top: 0,
+          left: 0,
+          objectFit: 'cover',
+          overflow: 'hidden',
+        }}
+      />
+    );
+  return (
+    <div
+      css={{ width: '100%', height: '100%' }}
+      onClick={e => {
+        e.stopPropagation();
+        e.preventDefault();
+        displayPreview();
+      }}
+    >
+      <ImagePreview thumbnailUrl={thumbnailUrl} />
+    </div>
+  );
+};
+
+PreviewButton.propTypes = {
+  video: PropTypes.shape({
+    thumbnailUrl: PropTypes.string.isRequired,
+    previewUrl: PropTypes.string,
+  }).isRequired,
+};
+
 const VideoManager = ({ loading, data }) => {
   const [videos, setVideos] = useState([]);
   const [swappingVideo, setSwappingVideo] = useState(null);
@@ -172,6 +230,7 @@ const VideoManager = ({ loading, data }) => {
                       border: 0,
                       fontSize: '16px',
                       padding: '0 0 0 10px',
+                      overflow: 'hidden',
                       borderBottom: `1px solid ${styles.borderColor}`,
                       'media screen and (min-width: 480px)': {
                         fontSize: '24px',
@@ -190,11 +249,10 @@ const VideoManager = ({ loading, data }) => {
                         height: 100,
                         width: 100,
                         float: 'right',
-                        backgroundImage: `url(${config.assetPrefix}${video.thumbnailUrl})`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
                       }}
-                    />
+                    >
+                      <PreviewButton video={video} />
+                    </div>
                   </Button>
                 ))(data.allVideos)}
             </Modal>
