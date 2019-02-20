@@ -62,20 +62,28 @@ const PreviewButton = ({ video: { thumbnailUrl, previewUrl } }) => {
   );
   if (previewUrl && isPreviewDisplayed)
     return (
-      <video
-        autoPlay={true}
-        controls={true}
-        loop
-        src={`${config.assetPrefix}${previewUrl}`}
+      <div
         css={{
           width: '100%',
           height: '100%',
-          top: 0,
-          left: 0,
-          objectFit: 'cover',
           overflow: 'hidden',
         }}
-      />
+      >
+        <video
+          autoPlay={true}
+          controls={true}
+          loop
+          src={`${config.assetPrefix}${previewUrl}`}
+          css={{
+            width: '100%',
+            height: '100%',
+            top: 0,
+            left: 0,
+            objectFit: 'cover',
+            overflow: 'hidden',
+          }}
+        />
+      </div>
     );
   return (
     <div
