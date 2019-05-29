@@ -33,7 +33,7 @@ const Title = props => (
       fontSize: 24,
       lineHeight: headerHeight,
       color: styles.textColor,
-      margin: '0 20px 0 5px',
+      margin: '0 20px 0 10px',
       float: 'left',
     }}
     {...props}
@@ -164,6 +164,17 @@ const VideoManager = ({ loading, data }) => {
       >
         {/* <Button onClick={showPlayer}>map</Button>
     <Button onClick={hidePlayer}>Sampler</Button> */}
+        <a href="https://mapmusik.live" title="MapMusik Home">
+          <div
+            css={{
+              height: headerHeight,
+              width: headerHeight,
+              backgroundImage: `url('https://mapmusik.live/wp-content/uploads/2018/09/cropped-mm-logo_green_white_bg-3-192x192.gif')`,
+              float: 'left',
+              backgroundSize: 'cover',
+            }}
+          />
+        </a>
         <Title>MapMusik</Title>
         {swappingVideo ? (
           <HeaderButton
