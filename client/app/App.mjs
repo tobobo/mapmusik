@@ -49,8 +49,15 @@ const App = () => (
     <ApolloProvider client={apolloClient}>
       {/* <StrictMode> */}
       <Div100vh>
-        <Query query={videosQuery}>
-          {({ loading, data }) => <VideoManager loading={loading} data={data} />}
+        <Query query={videosQuery} notifyOnNetworkStatusChange>
+          {({ loading, data, refetch, networkStatus }) => (
+            <VideoManager
+              loading={loading}
+              data={data}
+              refetch={refetch}
+              networkStatus={networkStatus}
+            />
+          )}
         </Query>
       </Div100vh>
       {/* </StrictMode> */}

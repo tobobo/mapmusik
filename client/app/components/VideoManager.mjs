@@ -121,7 +121,7 @@ PreviewButton.propTypes = {
   }).isRequired,
 };
 
-const VideoManager = ({ loading, data }) => {
+const VideoManager = ({ loading, data, refetch, networkStatus }) => {
   const [videos, setVideos] = useState([]);
   const [swappingVideo, setSwappingVideo] = useState(null);
   useEffect(
@@ -246,6 +246,15 @@ const VideoManager = ({ loading, data }) => {
                   backgroundColor: styles.backgroundColor,
                 }}
               >
+                {!loading && (
+                  <HeaderButton
+                    onClick={() => {
+                      refetch();
+                    }}
+                  >
+                    Reload
+                  </HeaderButton>
+                )}
                 <HeaderButton
                   style={{ float: 'right', margin: '0 10px 0 0' }}
                   onClick={hideSelector}
