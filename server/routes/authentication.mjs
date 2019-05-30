@@ -43,11 +43,15 @@ export default app => {
   app.get('/auth/wordpress/callback', (req, res, next) => {
     passport.authenticate('wordpress', (passportErr, user) => {
       if (passportErr) {
+        console.log('passport err', passportErr);
         res.redirect('/');
+        return;
       }
       req.login(user, loginErr => {
         if (loginErr) {
+          console.log('login err', loginErr);
           res.redirect('/');
+          return;
         }
         res.redirect('/admin');
       });
