@@ -6,9 +6,6 @@ import config from '../../config/server.js';
 
 const { OAuth2Strategy } = passportOAuth;
 
-
-console.log('wordpress oauth', config.wordpressOAuth);
-
 passport.use(
   'wordpress',
   new OAuth2Strategy(
