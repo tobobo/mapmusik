@@ -4,6 +4,10 @@ import ApolloServerExpress from 'apollo-server-express';
 const { ApolloServer, gql } = ApolloServerExpress;
 
 const typeDefs = gql`
+  type Viewer {
+    authenticated: Boolean!
+  }
+
   enum VideoSortOrder {
     NEW
     FEATURED
@@ -22,15 +26,18 @@ const typeDefs = gql`
 
   type Query {
     videos(sortBy: VideoSortOrder = NEW): [Video!]!
+    viewer: Viewer!
   }
 `;
 
 const resolvers = {
   Query: {
-    videos: (_, { sortBy }, { mysqlAdapter }) => {
+    videos: async (_, { sortBy }, { mysqlAdapter }) => {
       if (sortBy === 'FEATURED') return mysqlAdapter.getFeaturedVideos();
       return mysqlAdapter.getVideos();
     },
+
+    viewer: (_, __, { isAuthenticated }) => ({ authenticated: isAuthenticated }),
   },
 
   Video: {
@@ -42,15 +49,14 @@ const resolvers = {
   },
 };
 
-const setupGraphql = app => {
+export default (app, { isAuthenticated }) => {
   const server = new ApolloServer({
     typeDefs,
     resolvers,
-    context: () => ({
+    context: ({ req }) => ({
       mysqlAdapter: app.get('mysqlAdapter'),
+      isAuthenticated: isAuthenticated(req),
     }),
   });
   server.applyMiddleware({ app });
 };
-
-export default setupGraphql;

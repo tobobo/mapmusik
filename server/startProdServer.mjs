@@ -3,7 +3,6 @@ import bodyParser from 'body-parser';
 import path from 'path';
 import process from 'process';
 import compression from 'compression';
-import setupGraphql from './lib/setupGraphql.mjs';
 import config from '../config/server.js';
 import routes from './routes.mjs';
 
@@ -12,7 +11,6 @@ const app = express();
 const start = ({ mysqlAdapter }) => {
   app.use(bodyParser.json());
   app.use(compression());
-  setupGraphql(app);
   app.set('mysqlAdapter', mysqlAdapter);
 
   app.use('/bundle', express.static('./prod-bundle'));

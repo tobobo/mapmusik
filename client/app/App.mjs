@@ -1,12 +1,11 @@
 import React from 'react';
-import Div100vh from 'react-div-100vh';
 import { HttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
-import gql from 'graphql-tag';
 import ApolloClient from 'apollo-client';
-import { ApolloProvider, Query } from 'react-apollo';
-import { Global, css } from '@emotion/core';
-import VideoManager from './components/VideoManager.mjs';
+import { ApolloProvider } from 'react-apollo';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+import Play from './components/Play.mjs';
+import Admin from './components/Admin.mjs';
 
 const apolloClient = new ApolloClient({
   link: new HttpLink({
@@ -15,52 +14,13 @@ const apolloClient = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-const videosQuery = gql`
-  {
-    allVideos: videos {
-      ...VideoFields
-    }
-    featuredVideos: videos(sortBy: FEATURED) {
-      ...VideoFields
-    }
-  }
-
-  fragment VideoFields on Video {
-    id
-    createdAt
-    videoUrl
-    thumbnailUrl
-    audioUrl
-    previewUrl
-    lat
-    lng
-  }
-`;
-
 const App = () => (
   <React.Fragment>
-    <Global
-      styles={css`
-        * {
-          font-family: 'Helvetica Neue';
-        }
-      `}
-    />
     <ApolloProvider client={apolloClient}>
-      {/* <StrictMode> */}
-      <Div100vh>
-        <Query query={videosQuery} notifyOnNetworkStatusChange>
-          {({ loading, data, refetch, networkStatus }) => (
-            <VideoManager
-              loading={loading}
-              data={data}
-              refetch={refetch}
-              networkStatus={networkStatus}
-            />
-          )}
-        </Query>
-      </Div100vh>
-      {/* </StrictMode> */}
+      <Router>
+        <Route exact path="/" component={Play} />
+        <Route exact path="/admin" component={Admin} />
+      </Router>
     </ApolloProvider>
   </React.Fragment>
 );
