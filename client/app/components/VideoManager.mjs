@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { withScriptjs, withGoogleMap, GoogleMap } from 'react-google-maps';
 import Modal from 'react-modal';
@@ -135,6 +135,34 @@ const VideoManager = ({ loading, data, refetch, networkStatus }) => {
     [data]
   );
 
+  const shuffleVideos = useCallback(
+    () => {
+      setVideos(
+        flow(
+          shuffle,
+          slice(0, 12)
+        )(data.allVideos)
+      );
+    },
+    [data]
+  );
+
+  useEffect(
+    () => {
+      const onSlashPress = e => {
+        const key = String.fromCharCode(e.keyCode || e.which);
+        if (key !== '/') return;
+        shuffleVideos();
+      };
+      window.addEventListener('keypress', onSlashPress);
+
+      return () => {
+        window.removeEventListener('keypress', onSlashPress);
+      };
+    },
+    [shuffleVideos]
+  );
+
   const swapVideo = (index, video) => {
     setVideos(prevVideos => [...prevVideos.slice(0, index), video, ...prevVideos.slice(index + 1)]);
     setSwappingVideo(null);
@@ -252,12 +280,7 @@ const VideoManager = ({ loading, data, refetch, networkStatus }) => {
                 {!loading && (
                   <HeaderButton
                     onClick={() => {
-                      setVideos(
-                        flow(
-                          shuffle,
-                          slice(0, 12)
-                        )(data.allVideos)
-                      );
+                      shuffleVideos();
                       hideSelector();
                     }}
                   >
