@@ -6,6 +6,15 @@ export default connection => {
   };
   const getUploads = ({ limit = 100 } = {}) =>
     connection.query('select * from uploads limit = ?', [limit]);
+  const getPublicVideos = ({ limit = 100 } = {}) =>
+    connection.query(
+      'select * from videos where video_url is not null and hidden_at is null order by created_at desc limit ?',
+      [limit]
+    );
+  const getVideoById = async id => {
+    const videos = await connection.query('select * from videos where id = ?', [id]);
+    return videos[0];
+  };
   const getVideos = ({ limit = 100 } = {}) =>
     connection.query(
       'select * from videos where video_url is not null order by created_at desc limit ?',
@@ -40,6 +49,8 @@ export default connection => {
     getUploadByUrl,
     getUploads,
     getVideoByEncoderJobId,
+    getVideoById,
+    getPublicVideos,
     getVideos,
     getFeaturedVideos,
     createVideo,
