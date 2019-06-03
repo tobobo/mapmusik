@@ -85,6 +85,7 @@ const VideosList = () => (
             </p>
           </div>
           <video
+            controls
             css={{ height: '100%', float: 'right' }}
             src={`${config.assetPrefix}${video.previewUrl}`}
           />
