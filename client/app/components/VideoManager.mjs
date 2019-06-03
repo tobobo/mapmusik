@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withScriptjs, withGoogleMap, GoogleMap } from 'react-google-maps';
 import Modal from 'react-modal';
+import flow from 'lodash/fp/flow';
 import flowRight from 'lodash/fp/flowRight';
 import isEmpty from 'lodash/fp/isEmpty';
 import map from 'lodash/fp/map';
 import range from 'lodash/fp/range';
+import shuffle from 'lodash/fp/shuffle';
+import slice from 'lodash/fp/slice';
 import format from 'date-fns/fp/format';
 import Player from './Player.mjs';
 import useToggle from '../lib/useToggle.js';
@@ -246,6 +249,21 @@ const VideoManager = ({ loading, data, refetch, networkStatus }) => {
                   backgroundColor: styles.backgroundColor,
                 }}
               >
+                {!loading && (
+                  <HeaderButton
+                    onClick={() => {
+                      setVideos(
+                        flow(
+                          shuffle,
+                          slice(0, 12)
+                        )(data.allVideos)
+                      );
+                      hideSelector();
+                    }}
+                  >
+                    Shuffle
+                  </HeaderButton>
+                )}
                 {!loading && (
                   <HeaderButton
                     onClick={() => {
