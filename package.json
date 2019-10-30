@@ -64,7 +64,7 @@
     "babel-loader": "^8.0.4",
     "babel-preset-env": "^1.7.0",
     "csv": "^5.1.1",
-    "csv-parse": "^4.3.1",
+    "csv-parse": "^4.4.6",
     "eslint": "^5.11.1",
     "eslint-config-change-base": "^7.0.0",
     "eslint-config-prettier": "^3.3.0",
