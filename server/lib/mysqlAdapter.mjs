@@ -8,7 +8,7 @@ export default connection => {
     connection.query('select * from uploads limit = ?', [limit]);
   const getPublicVideos = ({ limit = 100 } = {}) =>
     connection.query(
-      'select * from videos where video_url is not null and hidden_at is null order by created_at desc limit ?',
+      'select * from videos where video_url is not null and audio_url is not null and preview_url is not null and hidden_at is null order by created_at desc limit ?',
       [limit]
     );
   const getVideoById = async id => {
@@ -17,7 +17,7 @@ export default connection => {
   };
   const getVideos = ({ limit = 100 } = {}) =>
     connection.query(
-      'select * from videos where video_url is not null order by created_at desc limit ?',
+      'select * from videos where video_url is not null and audio_url is not null and preview_url is not null order by created_at desc limit ?',
       [limit]
     );
   const getFeaturedVideos = ({ limit = 100 } = {}) =>
